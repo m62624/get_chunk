@@ -6,7 +6,7 @@ use std::fs::{read_to_string, write};
 /// Structure for command line arguments
 #[derive(Parser, Debug)]
 #[command(author = "m62624")]
-#[command(version = "1.0.0")]
+#[command(version = "0.2.1")]
 #[command(about = "Retrieve the fragment from the file")]
 pub struct Fragment {
     /// read from file
