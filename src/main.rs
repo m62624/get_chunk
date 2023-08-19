@@ -1,5 +1,5 @@
 //! A program to retrieve a text fragment
-use retrieve_the_fragment_from::*;
+use get_chunk::*;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     runner()
