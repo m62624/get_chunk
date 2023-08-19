@@ -31,8 +31,8 @@ Usage: get_chunk [OPTIONS] --read-from <READ_FROM> --start-str <START_STR>
 Options:
   -r, --read-from <READ_FROM>  read from file
   -s, --start-str <START_STR>  start string (Regular Expression is available)
-  -e, --end-str <END_STR>      end string (optional, if not specified, the file is read to the end. Regular Expression is available) if no final match is found, reads the file to the end
-  -w, --write-to <WRITE_TO>    write to file (optional, if not specified, output to stdout)
-  -h, --help                   Print help
+  -e, --end-str <END_STR>      end string (Optional, if not specified || no final match is found, the file is read to the end. Regular Expression is available)
+  -w, --write-to <WRITE_TO>    write to file (Optional, if not specified, output to stdout)
+  -h, --help                   Print help (see more with '--help')
   -V, --version                Print version
 ```
