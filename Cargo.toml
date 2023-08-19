@@ -8,3 +8,9 @@ edition = "2021"
 [dependencies]
 regex = "1.9.3"
 clap = { version = "4.3.23", features = ["derive"] }
+
+[profile.release]
+strip = true
+opt-level = "z"
+lto = true
+codegen-units = 1
