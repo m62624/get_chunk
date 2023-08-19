@@ -15,8 +15,7 @@ pub struct Fragment {
     /// start string (Regular Expression is available)
     #[arg(short, long)]
     start_str: String,
-    /// end string (Regular Expression is available)
-    /// if no final match is found, reads the file to the end
+    /// end string (optional, if not specified || no final match is found, the file is read to the end. Regular Expression is available)
     #[arg(short, long)]
     end_str: Option<String>,
     /// write to file (optional, if not specified, output to stdout)
@@ -58,7 +57,6 @@ pub fn runner() -> Result<(), Box<dyn Error>> {
             .start();
         &all_content[start_index..end_index]
     } else {
-        
         &all_content[start_index..]
     };
 
