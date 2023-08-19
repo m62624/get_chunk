@@ -3,6 +3,11 @@
 ## About
 
 This utility is used to retrieve the fragment from a file. ( I've created this tool for my personal use, aimed at extracting specific snippets from a generic `CHANGELOG` file :D )
+## Installation
+
+```bash
+cargo install get_chunk
+```
 
 ## Example
 
