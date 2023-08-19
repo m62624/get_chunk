@@ -4,7 +4,7 @@
 
 This utility is used to retrieve the fragment from a file. (I made it for myself to just get the snippet I need from a generic CHANGELOG file :D)
 
-## Simple example
+## Example
 
 ```bash
 # text from CHANGELOG.md
@@ -15,7 +15,7 @@ This utility is used to retrieve the fragment from a file. (I made it for myself
 # # [1.0.0] - xxxx-xx-xx
 # ### Added
 # - text text text text
-get_chunk --read-from "./CHANGELOG.md" --start-str "(?m)## \[\d\.\d\.\d\]" --write-to "temp_changelog.md"
+get_chunk --read-from "./CHANGELOG.md" --start-str "## \[\d\.\d\.\d\]" --write-to "temp_changelog.md"
 
 # Output
 # ## [2.0.0] - xxxx-xx-xx
