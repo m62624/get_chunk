@@ -2,7 +2,7 @@
 
 ## About
 
-This utility is used to retrieve the fragment from a file. (I made it for myself to just get the snippet I need from a generic CHANGELOG file :D)
+This utility is used to retrieve the fragment from a file. (I made it for myself to just get the snippet I need from a generic `CHANGELOG` file :D)
 
 ## Example
 
