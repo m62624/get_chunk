@@ -15,10 +15,10 @@ pub struct Fragment {
     /// start string (Regular Expression is available)
     #[arg(short, long)]
     start_str: String,
-    /// end string (optional, if not specified || no final match is found, the file is read to the end. Regular Expression is available)
+    /// end string (Optional, if not specified || no final match is found, the file is read to the end. Regular Expression is available)
     #[arg(short, long)]
     end_str: Option<String>,
-    /// write to file (optional, if not specified, output to stdout)
+    /// write to file (Optional, if not specified, output to stdout)
     #[arg(short, long)]
     write_to: Option<String>,
 }
