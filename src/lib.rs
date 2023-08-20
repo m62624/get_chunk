@@ -50,12 +50,18 @@ pub fn runner() -> Result<(), Box<dyn Error>> {
             .find(&all_content)
             .map(|m| m.start())
             .unwrap_or_else(|| all_content.len());
+        if end_index < start_index {
+            return Err("End string is before start string".into());
+        }
         &all_content[start_index..end_index]
     } else if let Some(end_index) = fragment.next() {
         let end_index = end_index
             .get(0)
             .ok_or("No capture found for end string")?
             .start();
+        if end_index < start_index {
+            return Err("End string is before start string".into());
+        }
         &all_content[start_index..end_index]
     } else {
         &all_content[start_index..]

@@ -1,6 +1,6 @@
 [package]
 name = "get_chunk"
-version = "0.2.1"
+version = "0.2.2"
 edition = "2021"
 description = "Get a chunk of a file"
 repository = "https://github.com/m62624/get_chunk"
