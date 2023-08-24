@@ -6,7 +6,7 @@ use std::fs::{read_to_string, write};
 /// Structure for command line arguments
 #[derive(Parser, Debug)]
 #[command(author = "m62624")]
-#[command(version = "0.2.1")]
+#[command(version = "0.2.2")]
 #[command(long_about = "Regex https://crates.io/crates/regex is used as a basis")]
 #[command(about = "Retrieve the fragment from the file")]
 pub struct Fragment {
