@@ -4,6 +4,31 @@ use std::ops::{Add, Div, Mul, Sub};
 pub use strum::IntoEnumIterator;
 use strum_macros::EnumIter;
 
+impl From<si_format::SIUnit> for ies_format::IECUnit {
+    fn from(si_unit: si_format::SIUnit) -> Self {
+        match si_unit {
+            si_format::SIUnit::Bytes(value_h, value_b) => {
+                ies_format::IECUnit::Bytes(value_h, value_b)
+            }
+            si_format::SIUnit::Overflow => ies_format::IECUnit::Overflow,
+            _ => ies_format::IECUnit::auto(si_unit.get_values().1),
+        }
+    }
+}
+
+impl From<ies_format::IECUnit> for si_format::SIUnit {
+    fn from(iec_unit: ies_format::IECUnit) -> Self {
+        match iec_unit {
+            ies_format::IECUnit::Bytes(value_h, value_b) => {
+                si_format::SIUnit::Bytes(value_h, value_b)
+            }
+            ies_format::IECUnit::Overflow => si_format::SIUnit::Overflow,
+            _ => si_format::SIUnit::auto(iec_unit.get_values().1),
+        }
+    }
+}
+
+/// 1000
 pub mod si_format {
     use super::*;
 
@@ -58,7 +83,7 @@ pub mod si_format {
             }
         }
 
-        pub fn into_human_readable(bytes: f64) -> SIUnit {
+        pub fn auto(bytes: f64) -> SIUnit {
             if bytes == f64::INFINITY {
                 SIUnit::Overflow
             } else if bytes < BYTES_IN_KB {
@@ -106,7 +131,7 @@ pub mod si_format {
             if self == SIUnit::Overflow || other == SIUnit::Overflow {
                 SIUnit::Overflow
             } else {
-                SIUnit::into_human_readable(self.get_values().1 + other.get_values().1)
+                SIUnit::auto(self.get_values().1 + other.get_values().1)
             }
         }
     }
@@ -118,7 +143,7 @@ pub mod si_format {
             if self == SIUnit::Overflow || other == SIUnit::Overflow {
                 SIUnit::Overflow
             } else {
-                SIUnit::into_human_readable(self.get_values().1 - other.get_values().1)
+                SIUnit::auto(self.get_values().1 - other.get_values().1)
             }
         }
     }
@@ -130,7 +155,7 @@ pub mod si_format {
             if self == SIUnit::Overflow {
                 SIUnit::Overflow
             } else {
-                SIUnit::into_human_readable(self.get_values().1 * scalar)
+                SIUnit::auto(self.get_values().1 * scalar)
             }
         }
     }
@@ -142,7 +167,7 @@ pub mod si_format {
             if self == SIUnit::Overflow {
                 SIUnit::Overflow
             } else {
-                SIUnit::into_human_readable(self.get_values().1 / divisor)
+                SIUnit::auto(self.get_values().1 / divisor)
             }
         }
     }
@@ -184,6 +209,7 @@ pub mod si_format {
     }
 }
 
+/// 1024
 pub mod ies_format {
     use super::*;
     // IEC format.
@@ -216,28 +242,28 @@ pub mod ies_format {
 
     pub enum IECSize {
         Bytes,
-        Kilobytes,
-        Megabytes,
-        Gigabytes,
-        Terabytes,
-        Petabytes,
-        Exabytes,
+        Kibibytes,
+        Mebibytes,
+        Gibibytes,
+        Tebibytes,
+        Pebibytes,
+        Exbibyte,
     }
 
     impl IECUnit {
         pub fn new(value: f64, unit_type: IECSize) -> IECUnit {
             match unit_type {
                 IECSize::Bytes => IECUnit::Bytes(value, value),
-                IECSize::Kilobytes => IECUnit::Kibibytes(value, value * BYTES_IN_KIB),
-                IECSize::Megabytes => IECUnit::Mibibytes(value, value * BYTES_IN_MIB),
-                IECSize::Gigabytes => IECUnit::Gibibytes(value, value * BYTES_IN_GIB),
-                IECSize::Terabytes => IECUnit::Tebibytes(value, value * BYTES_IN_TIB),
-                IECSize::Petabytes => IECUnit::Pebibytes(value, value * BYTES_IN_PIB),
-                IECSize::Exabytes => IECUnit::Exbibyte(value, value * BYTES_IN_EIB),
+                IECSize::Kibibytes => IECUnit::Kibibytes(value, value * BYTES_IN_KIB),
+                IECSize::Mebibytes => IECUnit::Mibibytes(value, value * BYTES_IN_MIB),
+                IECSize::Gibibytes => IECUnit::Gibibytes(value, value * BYTES_IN_GIB),
+                IECSize::Tebibytes => IECUnit::Tebibytes(value, value * BYTES_IN_TIB),
+                IECSize::Pebibytes => IECUnit::Pebibytes(value, value * BYTES_IN_PIB),
+                IECSize::Exbibyte => IECUnit::Exbibyte(value, value * BYTES_IN_EIB),
             }
         }
 
-        pub fn into_human_readable(bytes: f64) -> IECUnit {
+        pub fn auto(bytes: f64) -> IECUnit {
             if bytes == f64::INFINITY {
                 IECUnit::Overflow
             } else if bytes < BYTES_IN_KIB {
@@ -285,7 +311,7 @@ pub mod ies_format {
             if self == IECUnit::Overflow || other == IECUnit::Overflow {
                 IECUnit::Overflow
             } else {
-                IECUnit::into_human_readable(self.get_values().1 + other.get_values().1)
+                IECUnit::auto(self.get_values().1 + other.get_values().1)
             }
         }
     }
@@ -297,7 +323,7 @@ pub mod ies_format {
             if self == IECUnit::Overflow || other == IECUnit::Overflow {
                 IECUnit::Overflow
             } else {
-                IECUnit::into_human_readable(self.get_values().1 - other.get_values().1)
+                IECUnit::auto(self.get_values().1 - other.get_values().1)
             }
         }
     }
@@ -309,7 +335,7 @@ pub mod ies_format {
             if self == IECUnit::Overflow {
                 IECUnit::Overflow
             } else {
-                IECUnit::into_human_readable(self.get_values().1 * scalar)
+                IECUnit::auto(self.get_values().1 * scalar)
             }
         }
     }
@@ -321,7 +347,7 @@ pub mod ies_format {
             if self == IECUnit::Overflow {
                 IECUnit::Overflow
             } else {
-                IECUnit::into_human_readable(self.get_values().1 / divisor)
+                IECUnit::auto(self.get_values().1 / divisor)
             }
         }
     }
