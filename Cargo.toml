@@ -2,8 +2,9 @@
 name = "get_chunk"
 version = "1.0.0"
 edition = "2021"
+description = "File iterator or stream with auto or manual chunk size selection"
 categories = ["asynchronous"]
-keywords = ["file", "async-io", "search", "find", "case-insensitive"]
+keywords = ["file", "async-io", "chunk"]
 license = "MIT"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [dependencies]
