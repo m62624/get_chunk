@@ -84,7 +84,7 @@ pub mod si_format {
         }
 
         pub fn auto(bytes: f64) -> SIUnit {
-            if bytes == f64::INFINITY {
+            if bytes == f64::INFINITY || bytes == f64::NEG_INFINITY || bytes > f64::MAX {
                 SIUnit::Overflow
             } else if bytes < BYTES_IN_KB {
                 SIUnit::Bytes(bytes, bytes)
@@ -264,7 +264,7 @@ pub mod ies_format {
         }
 
         pub fn auto(bytes: f64) -> IECUnit {
-            if bytes == f64::INFINITY {
+            if bytes == f64::INFINITY || bytes == f64::NEG_INFINITY || bytes > f64::MAX {
                 IECUnit::Overflow
             } else if bytes < BYTES_IN_KIB {
                 IECUnit::Bytes(bytes, bytes)
