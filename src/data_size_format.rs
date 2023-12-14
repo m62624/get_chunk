@@ -48,7 +48,7 @@ pub mod si_format {
 
     /// Represents different units of data size, allowing for conversion between human-readable
     /// representations and precise byte values.
-    #[derive(PartialEq, Debug, Clone, Copy, EnumIter)]
+    #[derive(PartialOrd, PartialEq, Debug, Clone, Copy, EnumIter)]
     pub enum SIUnit {
         Bytes(f64, f64),
         Kilobytes(f64, f64),
@@ -172,21 +172,6 @@ pub mod si_format {
         }
     }
 
-    impl Eq for SIUnit {}
-
-    #[cfg(not(tarpaulin_include))]
-    impl PartialOrd for SIUnit {
-        fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-            Some(self.cmp(other))
-        }
-    }
-
-    impl Ord for SIUnit {
-        fn cmp(&self, other: &Self) -> Ordering {
-            self.partial_cmp(other).unwrap_or(Ordering::Equal)
-        }
-    }
-
     impl From<SIUnit> for f64 {
         fn from(data_size_unit: SIUnit) -> Self {
             data_size_unit.get_values().1
@@ -228,7 +213,7 @@ pub mod ies_format {
 
     /// Represents different units of data size, allowing for conversion between human-readable
     /// representations and precise byte values.
-    #[derive(PartialEq, Debug, Clone, Copy, EnumIter)]
+    #[derive(PartialOrd, PartialEq, Debug, Clone, Copy, EnumIter)]
     pub enum IECUnit {
         Bytes(f64, f64),
         Kibibytes(f64, f64),
@@ -352,20 +337,6 @@ pub mod ies_format {
         }
     }
 
-    impl Eq for IECUnit {}
-
-    #[cfg(not(tarpaulin_include))]
-    impl PartialOrd for IECUnit {
-        fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-            Some(self.cmp(other))
-        }
-    }
-
-    impl Ord for IECUnit {
-        fn cmp(&self, other: &Self) -> Ordering {
-            self.partial_cmp(other).unwrap_or(Ordering::Equal)
-        }
-    }
 
     impl From<IECUnit> for f64 {
         fn from(data_size_unit: IECUnit) -> Self {
