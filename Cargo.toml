@@ -1,19 +1,29 @@
 [package]
 name = "get_chunk"
-version = "0.2.2"
+version = "1.0.0"
 edition = "2021"
-description = "Get a chunk of a file"
-repository = "https://github.com/m62624/get_chunk"
-categories = ["command-line-utilities"]
+description = "Crate for accessing a file by path, case insensitive. Automatic detection, create a path with a new file or open an existing file"
+categories = ["filesystem", "asynchronous"]
+keywords = ["file", "async-io", "search", "find", "case-insensitive"]
 license = "MIT"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
 [dependencies]
-regex = "1.9.3"
-clap = { version = "4.3.23", features = ["derive"] }
+tokio = { version = "1.26.0", features = ["rt", "fs", "io-util"] }
+strum = "0.25.0"
+strum_macros = "0.25.3"
+sysinfo = "0.29.10"
+unicase = "2.7.0"
+tokio-stream = "0.1.14"
 
-[profile.release]
-strip = true
-opt-level = "z"
-lto = true
-codegen-units = 1
+[dev-dependencies]
+uuid = { version = "1.5.0", features = ["v4"] }
+home = "0.5.5"
+rand = "0.8.5"
+sha2 = "0.10.8"
+
+[lib]
+doctest = false
+
+[features]
+# for tests
+tests = ["tokio/macros", "tokio/rt-multi-thread"]
