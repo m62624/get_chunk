@@ -31,6 +31,14 @@ sha2 = "0.10.8"
 doctest = false
 
 [features]
+
+# Dependencies for asynchronous stream handling with Tokio.
 stream = ["dep:tokio-stream", "dep:tokio"]
+
+# Dependencies for size formatting using Strum and Strum_macros.
+# Size formatting provides a convenient way to specify chunk sizes in
+# megabytes, mebibytes, etc., or view file sizes in different formats (bytes, MB, MiB, etc.).
 size_format = ["dep:strum", "dep:strum_macros"]
+
+# Dependencies for unit tests using Tokio macros and a multi-threaded runtime.
 tests = ["tokio/macros", "tokio/rt-multi-thread"]
