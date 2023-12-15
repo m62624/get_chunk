@@ -1,4 +1,3 @@
-use std::cmp::Ordering;
 use std::fmt::Display;
 use std::ops::{Add, Div, Mul, Sub};
 pub use strum::IntoEnumIterator;
@@ -336,7 +335,6 @@ pub mod ies_format {
             }
         }
     }
-
 
     impl From<IECUnit> for f64 {
         fn from(data_size_unit: IECUnit) -> Self {
