@@ -27,7 +27,11 @@ impl From<ies_format::IECUnit> for si_format::SIUnit {
     }
 }
 
-/// 1000
+/// ## 1000
+/// This module provides functionality for working with data sizes in the SI format.
+/// It includes constants for different size thresholds (e.g., kilobytes, megabytes),
+/// a data structure (`SIUnit`) representing various units of data size, and methods
+/// for convenient conversion and display of data sizes in human-readable formats.
 pub mod si_format {
     use super::*;
 
@@ -188,7 +192,11 @@ pub mod si_format {
     }
 }
 
-/// 1024
+/// ## 1024
+/// This module offers functionality for dealing with data sizes in the IEC format.
+/// Similar to the SI module, it contains constants for size thresholds and a data structure
+/// (`IECUnit`) representing different units of data size. Additionally, it provides methods
+/// for converting and displaying data sizes in human-readable formats according to the IEC standard.
 pub mod ies_format {
     use super::*;
     // IEC format.

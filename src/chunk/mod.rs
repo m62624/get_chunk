@@ -1,8 +1,3 @@
-use super::data_size_format::{
-    ies_format::{IECSize, IECUnit},
-    si_format::{SISize, SIUnit},
-};
-
 use std::time::{Duration, Instant};
 use sysinfo::RefreshKind;
 use sysinfo::{System, SystemExt};
