@@ -1,6 +1,4 @@
-use std::time::{Duration, Instant};
-use sysinfo::RefreshKind;
-use sysinfo::{System, SystemExt};
+use sysinfo::{RefreshKind, System, SystemExt};
 
 pub mod iterator;
 pub mod stream;
@@ -15,14 +13,11 @@ pub struct Memory {
 }
 
 impl Memory {
-    /// Create a new object that stores information about the free and total space on the disk. \
-    /// RAM information is also stored here. The information is fixed, before use, update the data via `update_info()`
     fn new() -> Self {
-        let system_info = System::new_with_specifics(RefreshKind::new().with_memory());
         // only RAM tracking
         Self {
-            ram_available: system_info.available_memory() as f64,
-            system_info,
+            ram_available: 0.0,
+            system_info: System::new_with_specifics(RefreshKind::new().with_memory()),
         }
     }
 }
