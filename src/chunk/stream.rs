@@ -1,6 +1,6 @@
 use std::future::Future;
 
-use super::chunk::{Chunk, ChunkSize, FileInfo};
+use super::data_chunk::{Chunk, ChunkSize, FileInfo};
 use super::Memory;
 
 use tokio::io::AsyncSeekExt;
@@ -15,7 +15,7 @@ use tokio::{
 use tokio_stream::Stream;
 pub use tokio_stream::StreamExt;
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 struct FilePack {
     metadata: FileInfo,
     buffer: Option<BufReader<File>>,
@@ -53,7 +53,7 @@ impl FilePack {
                         if buffer.is_empty() {
                             self.read_complete = true;
                         }
-                        return Ok((
+                        Ok((
                             Chunk {
                                 bytes_per_second: if !timer.is_zero() {
                                     buffer.len() as f64 / timer.as_secs_f64()
@@ -63,27 +63,15 @@ impl FilePack {
                                 value: buffer,
                             },
                             self,
-                        ));
+                        ))
                     }
-                    Err(e) => return Err(e),
+                    Err(e) => Err(e),
                 }
             }
-            None => {
-                return Err(io::Error::new(
-                    io::ErrorKind::OutOfMemory,
-                    "buffer is empty",
-                ))
-            }
-        }
-    }
-}
-
-impl Default for FilePack {
-    fn default() -> Self {
-        Self {
-            metadata: FileInfo::default(),
-            buffer: None,
-            read_complete: false,
+            None => Err(io::Error::new(
+                io::ErrorKind::OutOfMemory,
+                "buffer is empty",
+            )),
         }
     }
 }
@@ -131,7 +119,7 @@ impl FileStream {
 
     pub fn set_start_position_percent(mut self, position_percent: f64) -> io::Result<Self> {
         self.file.metadata.start_position =
-            (self.file.metadata.size as f64 * (position_percent / 100.0)).min(100.0) as usize;
+            (self.file.metadata.size * (position_percent / 100.0)).min(100.0) as usize;
         self.file.buffer.as_mut().map(|buff| async {
             buff.seek(io::SeekFrom::Start(
                 self.file.metadata.start_position as u64,

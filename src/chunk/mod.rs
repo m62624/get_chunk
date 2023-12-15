@@ -32,7 +32,7 @@ impl Memory {
     }
 }
 
-mod chunk {
+mod data_chunk {
 
     #[derive(Debug)]
     pub struct Chunk {

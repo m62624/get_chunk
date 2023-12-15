@@ -1,4 +1,4 @@
-use super::chunk::{Chunk, ChunkSize, FileInfo};
+use super::data_chunk::{Chunk, ChunkSize, FileInfo};
 use super::Memory;
 
 use std::io::Seek;
@@ -20,7 +20,7 @@ impl FilePack {
     fn new(buffer: BufReader<File>, start_position: usize) -> io::Result<FilePack> {
         Ok(FilePack {
             metadata: FileInfo::new(buffer.get_ref().metadata()?.len() as f64, start_position),
-            buffer: buffer,
+            buffer,
             read_complete: false,
         })
     }
@@ -89,7 +89,7 @@ impl FileIter {
 
     pub fn set_start_position_percent(mut self, position_percent: f64) -> io::Result<Self> {
         self.file.metadata.start_position =
-            (self.file.metadata.size as f64 * (position_percent / 100.0)).min(100.0) as usize;
+            (self.file.metadata.size * (position_percent / 100.0)).min(100.0) as usize;
         self.file.buffer.seek(io::SeekFrom::Start(
             self.file.metadata.start_position as u64,
         ))?;
