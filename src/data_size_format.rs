@@ -83,22 +83,17 @@ pub mod si_format {
         }
 
         pub fn auto(bytes: f64) -> SIUnit {
-            if bytes == f64::INFINITY || bytes == f64::NEG_INFINITY || bytes > f64::MAX {
-                SIUnit::Overflow
-            } else if bytes < BYTES_IN_KB {
-                SIUnit::Bytes(bytes, bytes)
-            } else if bytes < BYTES_IN_MB {
-                SIUnit::Kilobytes(bytes / BYTES_IN_KB, bytes)
-            } else if bytes < BYTES_IN_GB {
-                SIUnit::Megabytes(bytes / BYTES_IN_MB, bytes)
-            } else if bytes < BYTES_IN_TB {
-                SIUnit::Gigabytes(bytes / BYTES_IN_GB, bytes)
-            } else if bytes < BYTES_IN_PB {
-                SIUnit::Terabytes(bytes / BYTES_IN_TB, bytes)
-            } else if bytes < BYTES_IN_EB {
-                SIUnit::Petabytes(bytes / BYTES_IN_PB, bytes)
-            } else {
-                SIUnit::Exabytes(bytes / BYTES_IN_EB, bytes)
+            match bytes {
+                b if b == f64::INFINITY || b == f64::NEG_INFINITY || b > f64::MAX => {
+                    SIUnit::Overflow
+                }
+                b if b < BYTES_IN_KB => SIUnit::Bytes(b, b),
+                b if b < BYTES_IN_MB => SIUnit::Kilobytes(b / BYTES_IN_KB, b),
+                b if b < BYTES_IN_GB => SIUnit::Megabytes(b / BYTES_IN_MB, b),
+                b if b < BYTES_IN_TB => SIUnit::Gigabytes(b / BYTES_IN_GB, b),
+                b if b < BYTES_IN_PB => SIUnit::Terabytes(b / BYTES_IN_TB, b),
+                b if b < BYTES_IN_EB => SIUnit::Petabytes(b / BYTES_IN_PB, b),
+                _ => SIUnit::Exabytes(bytes / BYTES_IN_EB, bytes),
             }
         }
 
@@ -248,22 +243,17 @@ pub mod ies_format {
         }
 
         pub fn auto(bytes: f64) -> IECUnit {
-            if bytes == f64::INFINITY || bytes == f64::NEG_INFINITY || bytes > f64::MAX {
-                IECUnit::Overflow
-            } else if bytes < BYTES_IN_KIB {
-                IECUnit::Bytes(bytes, bytes)
-            } else if bytes < BYTES_IN_MIB {
-                IECUnit::Kibibytes(bytes / BYTES_IN_KIB, bytes)
-            } else if bytes < BYTES_IN_GIB {
-                IECUnit::Mibibytes(bytes / BYTES_IN_MIB, bytes)
-            } else if bytes < BYTES_IN_TIB {
-                IECUnit::Gibibytes(bytes / BYTES_IN_GIB, bytes)
-            } else if bytes < BYTES_IN_PIB {
-                IECUnit::Tebibytes(bytes / BYTES_IN_TIB, bytes)
-            } else if bytes < BYTES_IN_EIB {
-                IECUnit::Pebibytes(bytes / BYTES_IN_PIB, bytes)
-            } else {
-                IECUnit::Exbibyte(bytes / BYTES_IN_EIB, bytes)
+            match bytes {
+                b if b == f64::INFINITY || b == f64::NEG_INFINITY || b > f64::MAX => {
+                    IECUnit::Overflow
+                }
+                b if b < BYTES_IN_KIB => IECUnit::Bytes(b, b),
+                b if b < BYTES_IN_MIB => IECUnit::Kibibytes(b / BYTES_IN_KIB, b),
+                b if b < BYTES_IN_GIB => IECUnit::Mibibytes(b / BYTES_IN_MIB, b),
+                b if b < BYTES_IN_TIB => IECUnit::Gibibytes(b / BYTES_IN_GIB, b),
+                b if b < BYTES_IN_PIB => IECUnit::Tebibytes(b / BYTES_IN_TIB, b),
+                b if b < BYTES_IN_EIB => IECUnit::Pebibytes(b / BYTES_IN_PIB, b),
+                _ => IECUnit::Exbibyte(bytes / BYTES_IN_EIB, bytes),
             }
         }
 
