@@ -77,6 +77,17 @@ impl FilePack {
 }
 
 type Task = Option<JoinHandle<io::Result<(Chunk, FilePack)>>>;
+
+
+/// The `FileStream` provides an asynchronous file stream designed to read data chunks from a file.
+/// 
+/// It operates in two modes:
+/// 1. **Auto Mode (default):** Dynamically determines an optimal chunk size based on the previous read time,
+///    adjusting it relative to the available RAM (85% available per iteration, i.e.,
+///    if a chunk is too big and the system cannot process it, it is cut down to 85%.).
+/// 2. **Fixed Size Mode:** Allows users to manually set the chunk size, with any remaining data carried over
+///    to the next iteration as a single chunk.
+#[derive(Debug)]
 pub struct FileStream {
     memory: Memory,
     file: FilePack,

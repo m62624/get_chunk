@@ -1,4 +1,6 @@
 use sysinfo::{RefreshKind, System, SystemExt};
+
+///
 /// Version: Sync
 ///
 /// This module defines the `FilePack` struct, which represents a synchronous file processing unit.
@@ -6,6 +8,14 @@ use sysinfo::{RefreshKind, System, SystemExt};
 /// about the read chunks. The synchronous version is suitable for scenarios where asynchronous
 /// processing is not a requirement.
 pub mod iterator;
+
+///
+/// Version: Async
+/// 
+/// This module defines the `FileStream` struct, which represents an asynchronous file processing unit.
+/// It is designed to work as an iterator, reading chunks of data from a file and providing information
+/// about the read chunks. The asynchronous version is suitable for scenarios where asynchronous
+/// processing is a requirement.
 pub mod stream;
 
 #[derive(Debug)]
@@ -32,7 +42,7 @@ impl Memory {
     }
 }
 
-mod data_chunk {
+pub mod data_chunk {
 
     #[derive(Debug)]
     pub struct Chunk {
@@ -40,10 +50,16 @@ mod data_chunk {
         pub bytes_per_second: f64,
     }
 
+    /// The `ChunkSize` enum represents different modes for determining the chunk size in the file processing module.
+    /// Regardless of the specific mode chosen, all modes adhere to the rules of the [Auto](ChunkSize::Auto) mode with RAM constraints.
     #[derive(Debug, Clone, Copy)]
     pub enum ChunkSize {
+        /// Automatically determines an optimal chunk size based on previous read times and available RAM,
+        /// ensuring it does not exceed 85% of the available RAM per iteration.
         Auto,
+        /// Specifies the chunk size as a percentage of the total file size, considering RAM checks.
         Percent(f64),
+        /// Allows users to manually set the chunk size in bytes, subject to RAM constraints.
         Bytes(usize),
     }
 
@@ -92,7 +108,13 @@ mod data_chunk {
     }
 
     impl ChunkSize {
-        pub fn calculate_chunk(prev: f64, now: f64, size: f64, ram: f64, mode: ChunkSize) -> f64 {
+        pub(crate) fn calculate_chunk(
+            prev: f64,
+            now: f64,
+            size: f64,
+            ram: f64,
+            mode: ChunkSize,
+        ) -> f64 {
             match mode {
                 ChunkSize::Auto => {
                     if prev > 0.0 {
