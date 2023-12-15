@@ -3,7 +3,7 @@ name = "get_chunk"
 version = "1.0.0"
 edition = "2021"
 description = "File iterator or stream with auto or manual chunk size selection"
-categories = ["asynchronous"]
+categories = ["asynchronous", "filesystem", "memory-management"]
 keywords = ["file", "async-io", "chunk"]
 license = "MIT"
 
