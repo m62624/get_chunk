@@ -3,7 +3,7 @@ use sysinfo::{RefreshKind, System, SystemExt};
 ///
 /// Version: Sync
 ///
-/// This module defines the `FilePack` struct, which represents a synchronous file processing unit.
+/// This module defines the [FileIter](iterator::FileIter) struct, which represents a synchronous file processing unit.
 /// It is designed to work as an iterator, reading chunks of data from a file and providing information
 /// about the read chunks. The synchronous version is suitable for scenarios where asynchronous
 /// processing is not a requirement.
@@ -12,7 +12,7 @@ pub mod iterator;
 ///
 /// Version: Async
 /// 
-/// This module defines the `FileStream` struct, which represents an asynchronous file processing unit.
+/// This module defines the [FileStream](stream::FileStream) struct, which represents an asynchronous file processing unit.
 /// It is designed to work as an iterator, reading chunks of data from a file and providing information
 /// about the read chunks. The asynchronous version is suitable for scenarios where asynchronous
 /// processing is a requirement.

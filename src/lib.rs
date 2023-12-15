@@ -1,6 +1,5 @@
 mod chunk;
 
-/// 
 pub use chunk::data_chunk::ChunkSize;
 
 /// The module is responsible for the size of the data
