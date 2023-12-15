@@ -1,5 +1,10 @@
 use sysinfo::{RefreshKind, System, SystemExt};
-
+/// Version: Sync
+///
+/// This module defines the `FilePack` struct, which represents a synchronous file processing unit.
+/// It is designed to work as an iterator, reading chunks of data from a file and providing information
+/// about the read chunks. The synchronous version is suitable for scenarios where asynchronous
+/// processing is not a requirement.
 pub mod iterator;
 pub mod stream;
 
@@ -19,6 +24,11 @@ impl Memory {
             ram_available: 0.0,
             system_info: System::new_with_specifics(RefreshKind::new().with_memory()),
         }
+    }
+
+    fn update_ram(&mut self) {
+        self.system_info.refresh_memory();
+        self.ram_available = self.system_info.available_memory() as f64;
     }
 }
 
@@ -47,6 +57,7 @@ mod chunk {
     #[derive(Debug)]
     pub struct FileInfo {
         pub size: f64,
+        pub start_position: usize,
         pub chunk_info: ChunkInfo,
     }
 
@@ -54,6 +65,7 @@ mod chunk {
         pub fn new(size: f64, start_position: usize) -> Self {
             Self {
                 size,
+                start_position,
                 chunk_info: ChunkInfo::default(),
             }
         }
@@ -63,6 +75,7 @@ mod chunk {
         fn default() -> Self {
             Self {
                 size: 0.0,
+                start_position: 0,
                 chunk_info: ChunkInfo::default(),
             }
         }
