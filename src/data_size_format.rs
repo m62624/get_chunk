@@ -3,26 +3,26 @@ use std::ops::{Add, Div, Mul, Sub};
 pub use strum::IntoEnumIterator;
 use strum_macros::EnumIter;
 
-impl From<si_format::SIUnit> for ies_format::IECUnit {
-    fn from(si_unit: si_format::SIUnit) -> Self {
+impl From<si::SIUnit> for ies::IECUnit {
+    fn from(si_unit: si::SIUnit) -> Self {
         match si_unit {
-            si_format::SIUnit::Byte(value_h, value_b) => {
-                ies_format::IECUnit::Byte(value_h, value_b)
+            si::SIUnit::Byte(value_h, value_b) => {
+                ies::IECUnit::Byte(value_h, value_b)
             }
-            si_format::SIUnit::Overflow => ies_format::IECUnit::Overflow,
-            _ => ies_format::IECUnit::auto(si_unit.get_values().1),
+            si::SIUnit::Overflow => ies::IECUnit::Overflow,
+            _ => ies::IECUnit::auto(si_unit.get_values().1),
         }
     }
 }
 
-impl From<ies_format::IECUnit> for si_format::SIUnit {
-    fn from(iec_unit: ies_format::IECUnit) -> Self {
+impl From<ies::IECUnit> for si::SIUnit {
+    fn from(iec_unit: ies::IECUnit) -> Self {
         match iec_unit {
-            ies_format::IECUnit::Byte(value_h, value_b) => {
-                si_format::SIUnit::Byte(value_h, value_b)
+            ies::IECUnit::Byte(value_h, value_b) => {
+                si::SIUnit::Byte(value_h, value_b)
             }
-            ies_format::IECUnit::Overflow => si_format::SIUnit::Overflow,
-            _ => si_format::SIUnit::auto(iec_unit.get_values().1),
+            ies::IECUnit::Overflow => si::SIUnit::Overflow,
+            _ => si::SIUnit::auto(iec_unit.get_values().1),
         }
     }
 }
@@ -32,7 +32,7 @@ impl From<ies_format::IECUnit> for si_format::SIUnit {
 /// It includes constants for different size thresholds (e.g., kilobytes, megabytes),
 /// a data structure (`SIUnit`) representing various units of data size, and methods
 /// for convenient conversion and display of data sizes in human-readable formats.
-pub mod si_format {
+pub mod si {
     use super::*;
 
     // SI format.
@@ -199,7 +199,7 @@ pub mod si_format {
 /// Similar to the SI module, it contains constants for size thresholds and a data structure
 /// (`IECUnit`) representing different units of data size. Additionally, it provides methods
 /// for converting and displaying data sizes in human-readable formats according to the IEC standard.
-pub mod ies_format {
+pub mod ies {
     use super::*;
     // IEC format.
     /// Kibibyte in bytes.
