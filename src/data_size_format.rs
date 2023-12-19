@@ -6,8 +6,8 @@ use strum_macros::EnumIter;
 impl From<si_format::SIUnit> for ies_format::IECUnit {
     fn from(si_unit: si_format::SIUnit) -> Self {
         match si_unit {
-            si_format::SIUnit::Bytes(value_h, value_b) => {
-                ies_format::IECUnit::Bytes(value_h, value_b)
+            si_format::SIUnit::Byte(value_h, value_b) => {
+                ies_format::IECUnit::Byte(value_h, value_b)
             }
             si_format::SIUnit::Overflow => ies_format::IECUnit::Overflow,
             _ => ies_format::IECUnit::auto(si_unit.get_values().1),
@@ -18,8 +18,8 @@ impl From<si_format::SIUnit> for ies_format::IECUnit {
 impl From<ies_format::IECUnit> for si_format::SIUnit {
     fn from(iec_unit: ies_format::IECUnit) -> Self {
         match iec_unit {
-            ies_format::IECUnit::Bytes(value_h, value_b) => {
-                si_format::SIUnit::Bytes(value_h, value_b)
+            ies_format::IECUnit::Byte(value_h, value_b) => {
+                si_format::SIUnit::Byte(value_h, value_b)
             }
             ies_format::IECUnit::Overflow => si_format::SIUnit::Overflow,
             _ => si_format::SIUnit::auto(iec_unit.get_values().1),
@@ -36,17 +36,17 @@ pub mod si_format {
     use super::*;
 
     // SI format.
-    /// Kilobytes in bytes.
+    /// Kilobyte in bytes.
     pub const BYTES_IN_KB: f64 = 1000.0;
-    /// Megabytes in bytes.
+    /// Megabyte in bytes.
     pub const BYTES_IN_MB: f64 = BYTES_IN_KB * BYTES_IN_KB;
-    /// Gigabytes in bytes.
+    /// Gigabyte in bytes.
     pub const BYTES_IN_GB: f64 = BYTES_IN_MB * BYTES_IN_KB;
-    /// Terabytes in bytes.
+    /// Terabyte in bytes.
     pub const BYTES_IN_TB: f64 = BYTES_IN_GB * BYTES_IN_KB;
-    /// Petabytes in bytes.
+    /// Petabyte in bytes.
     pub const BYTES_IN_PB: f64 = BYTES_IN_TB * BYTES_IN_KB;
-    /// Exabytes in bytes.
+    /// Exabyte in bytes.
     pub const BYTES_IN_EB: f64 = BYTES_IN_PB * BYTES_IN_KB;
 
     /// Represents different units of data size, allowing for conversion between human-readable
@@ -54,37 +54,37 @@ pub mod si_format {
     #[cfg_attr(feature = "debug", derive(Debug))]
     #[derive(PartialOrd, PartialEq, Clone, Copy, EnumIter)]
     pub enum SIUnit {
-        Bytes(f64, f64),
-        Kilobytes(f64, f64),
-        Megabytes(f64, f64),
-        Gigabytes(f64, f64),
-        Terabytes(f64, f64),
-        Petabytes(f64, f64),
-        Exabytes(f64, f64),
+        Byte(f64, f64),
+        Kilobyte(f64, f64),
+        Megabyte(f64, f64),
+        Gigabyte(f64, f64),
+        Terabyte(f64, f64),
+        Petabyte(f64, f64),
+        Exabyte(f64, f64),
         Overflow,
     }
     #[cfg_attr(feature = "debug", derive(Debug))]
     #[derive(Clone, Copy, EnumIter)]
     pub enum SISize {
-        Bytes,
-        Kilobytes,
-        Megabytes,
-        Gigabytes,
-        Terabytes,
-        Petabytes,
-        Exabytes,
+        Byte,
+        Kilobyte,
+        Megabyte,
+        Gigabyte,
+        Terabyte,
+        Petabyte,
+        Exabyte,
     }
 
     impl SIUnit {
         pub fn new(value: f64, unit_type: SISize) -> SIUnit {
             match unit_type {
-                SISize::Bytes => SIUnit::Bytes(value, value),
-                SISize::Kilobytes => SIUnit::Kilobytes(value, value * BYTES_IN_KB),
-                SISize::Megabytes => SIUnit::Megabytes(value, value * BYTES_IN_MB),
-                SISize::Gigabytes => SIUnit::Gigabytes(value, value * BYTES_IN_GB),
-                SISize::Terabytes => SIUnit::Terabytes(value, value * BYTES_IN_TB),
-                SISize::Petabytes => SIUnit::Petabytes(value, value * BYTES_IN_PB),
-                SISize::Exabytes => SIUnit::Exabytes(value, value * BYTES_IN_EB),
+                SISize::Byte => SIUnit::Byte(value, value),
+                SISize::Kilobyte => SIUnit::Kilobyte(value, value * BYTES_IN_KB),
+                SISize::Megabyte => SIUnit::Megabyte(value, value * BYTES_IN_MB),
+                SISize::Gigabyte => SIUnit::Gigabyte(value, value * BYTES_IN_GB),
+                SISize::Terabyte => SIUnit::Terabyte(value, value * BYTES_IN_TB),
+                SISize::Petabyte => SIUnit::Petabyte(value, value * BYTES_IN_PB),
+                SISize::Exabyte => SIUnit::Exabyte(value, value * BYTES_IN_EB),
             }
         }
 
@@ -93,26 +93,26 @@ pub mod si_format {
                 b if b == f64::INFINITY || b == f64::NEG_INFINITY || b > f64::MAX => {
                     SIUnit::Overflow
                 }
-                b if b < BYTES_IN_KB => SIUnit::Bytes(b, b),
-                b if b < BYTES_IN_MB => SIUnit::Kilobytes(b / BYTES_IN_KB, b),
-                b if b < BYTES_IN_GB => SIUnit::Megabytes(b / BYTES_IN_MB, b),
-                b if b < BYTES_IN_TB => SIUnit::Gigabytes(b / BYTES_IN_GB, b),
-                b if b < BYTES_IN_PB => SIUnit::Terabytes(b / BYTES_IN_TB, b),
-                b if b < BYTES_IN_EB => SIUnit::Petabytes(b / BYTES_IN_PB, b),
-                _ => SIUnit::Exabytes(bytes / BYTES_IN_EB, bytes),
+                b if b < BYTES_IN_KB => SIUnit::Byte(b, b),
+                b if b < BYTES_IN_MB => SIUnit::Kilobyte(b / BYTES_IN_KB, b),
+                b if b < BYTES_IN_GB => SIUnit::Megabyte(b / BYTES_IN_MB, b),
+                b if b < BYTES_IN_TB => SIUnit::Gigabyte(b / BYTES_IN_GB, b),
+                b if b < BYTES_IN_PB => SIUnit::Terabyte(b / BYTES_IN_TB, b),
+                b if b < BYTES_IN_EB => SIUnit::Petabyte(b / BYTES_IN_PB, b),
+                _ => SIUnit::Exabyte(bytes / BYTES_IN_EB, bytes),
             }
         }
 
         #[cfg(not(tarpaulin_include))]
         pub fn get_values(&self) -> (f64, f64) {
             match self {
-                SIUnit::Bytes(value_h, value_b)
-                | SIUnit::Kilobytes(value_h, value_b)
-                | SIUnit::Megabytes(value_h, value_b)
-                | SIUnit::Gigabytes(value_h, value_b)
-                | SIUnit::Terabytes(value_h, value_b)
-                | SIUnit::Petabytes(value_h, value_b)
-                | SIUnit::Exabytes(value_h, value_b) => (*value_h, *value_b),
+                SIUnit::Byte(value_h, value_b)
+                | SIUnit::Kilobyte(value_h, value_b)
+                | SIUnit::Megabyte(value_h, value_b)
+                | SIUnit::Gigabyte(value_h, value_b)
+                | SIUnit::Terabyte(value_h, value_b)
+                | SIUnit::Petabyte(value_h, value_b)
+                | SIUnit::Exabyte(value_h, value_b) => (*value_h, *value_b),
                 SIUnit::Overflow => (f64::INFINITY, f64::INFINITY),
             }
         }
@@ -120,7 +120,7 @@ pub mod si_format {
 
     impl Default for SIUnit {
         fn default() -> Self {
-            SIUnit::Bytes(0.0, 0.0)
+            SIUnit::Byte(0.0, 0.0)
         }
     }
 
@@ -181,13 +181,13 @@ pub mod si_format {
     impl Display for SIUnit {
         fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
             match self {
-                SIUnit::Bytes(_, bytes) => write!(f, "{:.2} bytes", bytes),
-                SIUnit::Kilobytes(kb, _) => write!(f, "{:.2} KB", kb),
-                SIUnit::Megabytes(mb, _) => write!(f, "{:.2} MB", mb),
-                SIUnit::Gigabytes(gb, _) => write!(f, "{:.2} GB", gb),
-                SIUnit::Terabytes(tb, _) => write!(f, "{:.2} TB", tb),
-                SIUnit::Petabytes(pb, _) => write!(f, "{:.2} PB", pb),
-                SIUnit::Exabytes(eb, _) => write!(f, "{:.2} EB", eb),
+                SIUnit::Byte(_, bytes) => write!(f, "{:.2} B", bytes),
+                SIUnit::Kilobyte(kb, _) => write!(f, "{:.2} KB", kb),
+                SIUnit::Megabyte(mb, _) => write!(f, "{:.2} MB", mb),
+                SIUnit::Gigabyte(gb, _) => write!(f, "{:.2} GB", gb),
+                SIUnit::Terabyte(tb, _) => write!(f, "{:.2} TB", tb),
+                SIUnit::Petabyte(pb, _) => write!(f, "{:.2} PB", pb),
+                SIUnit::Exabyte(eb, _) => write!(f, "{:.2} EB", eb),
                 SIUnit::Overflow => write!(f, "Overflow"),
             }
         }
@@ -202,15 +202,15 @@ pub mod si_format {
 pub mod ies_format {
     use super::*;
     // IEC format.
-    /// Kibibytes in bytes.
+    /// Kibibyte in bytes.
     pub const BYTES_IN_KIB: f64 = 1024.0;
-    /// Mebibytes in bytes.
+    /// Mebibyte in bytes.
     pub const BYTES_IN_MIB: f64 = BYTES_IN_KIB * BYTES_IN_KIB;
-    /// Gibibytes in bytes.
+    /// Gibibyte in bytes.
     pub const BYTES_IN_GIB: f64 = BYTES_IN_MIB * BYTES_IN_KIB;
-    /// Tebibytes in bytes.
+    /// Tebibyte in bytes.
     pub const BYTES_IN_TIB: f64 = BYTES_IN_GIB * BYTES_IN_KIB;
-    /// Pebibytes in bytes.
+    /// Pebibyte in bytes.
     pub const BYTES_IN_PIB: f64 = BYTES_IN_TIB * BYTES_IN_KIB;
     /// Exbibytes in bytes.
     pub const BYTES_IN_EIB: f64 = BYTES_IN_PIB * BYTES_IN_KIB;
@@ -220,12 +220,12 @@ pub mod ies_format {
     #[cfg_attr(feature = "debug", derive(Debug))]
     #[derive(PartialOrd, PartialEq, Clone, Copy, EnumIter)]
     pub enum IECUnit {
-        Bytes(f64, f64),
-        Kibibytes(f64, f64),
-        Mibibytes(f64, f64),
-        Gibibytes(f64, f64),
-        Tebibytes(f64, f64),
-        Pebibytes(f64, f64),
+        Byte(f64, f64),
+        Kibibyte(f64, f64),
+        Mebibyte(f64, f64),
+        Gibibyte(f64, f64),
+        Tebibyte(f64, f64),
+        Pebibyte(f64, f64),
         Exbibyte(f64, f64),
         Overflow,
     }
@@ -233,24 +233,24 @@ pub mod ies_format {
     #[cfg_attr(feature = "debug", derive(Debug))]
     #[derive(Clone, Copy, EnumIter)]
     pub enum IECSize {
-        Bytes,
-        Kibibytes,
-        Mebibytes,
-        Gibibytes,
-        Tebibytes,
-        Pebibytes,
+        Byte,
+        Kibibyte,
+        Mebibyte,
+        Gibibyte,
+        Tebibyte,
+        Pebibyte,
         Exbibyte,
     }
 
     impl IECUnit {
         pub fn new(value: f64, unit_type: IECSize) -> IECUnit {
             match unit_type {
-                IECSize::Bytes => IECUnit::Bytes(value, value),
-                IECSize::Kibibytes => IECUnit::Kibibytes(value, value * BYTES_IN_KIB),
-                IECSize::Mebibytes => IECUnit::Mibibytes(value, value * BYTES_IN_MIB),
-                IECSize::Gibibytes => IECUnit::Gibibytes(value, value * BYTES_IN_GIB),
-                IECSize::Tebibytes => IECUnit::Tebibytes(value, value * BYTES_IN_TIB),
-                IECSize::Pebibytes => IECUnit::Pebibytes(value, value * BYTES_IN_PIB),
+                IECSize::Byte => IECUnit::Byte(value, value),
+                IECSize::Kibibyte => IECUnit::Kibibyte(value, value * BYTES_IN_KIB),
+                IECSize::Mebibyte => IECUnit::Mebibyte(value, value * BYTES_IN_MIB),
+                IECSize::Gibibyte => IECUnit::Gibibyte(value, value * BYTES_IN_GIB),
+                IECSize::Tebibyte => IECUnit::Tebibyte(value, value * BYTES_IN_TIB),
+                IECSize::Pebibyte => IECUnit::Pebibyte(value, value * BYTES_IN_PIB),
                 IECSize::Exbibyte => IECUnit::Exbibyte(value, value * BYTES_IN_EIB),
             }
         }
@@ -260,12 +260,12 @@ pub mod ies_format {
                 b if b == f64::INFINITY || b == f64::NEG_INFINITY || b > f64::MAX => {
                     IECUnit::Overflow
                 }
-                b if b < BYTES_IN_KIB => IECUnit::Bytes(b, b),
-                b if b < BYTES_IN_MIB => IECUnit::Kibibytes(b / BYTES_IN_KIB, b),
-                b if b < BYTES_IN_GIB => IECUnit::Mibibytes(b / BYTES_IN_MIB, b),
-                b if b < BYTES_IN_TIB => IECUnit::Gibibytes(b / BYTES_IN_GIB, b),
-                b if b < BYTES_IN_PIB => IECUnit::Tebibytes(b / BYTES_IN_TIB, b),
-                b if b < BYTES_IN_EIB => IECUnit::Pebibytes(b / BYTES_IN_PIB, b),
+                b if b < BYTES_IN_KIB => IECUnit::Byte(b, b),
+                b if b < BYTES_IN_MIB => IECUnit::Kibibyte(b / BYTES_IN_KIB, b),
+                b if b < BYTES_IN_GIB => IECUnit::Mebibyte(b / BYTES_IN_MIB, b),
+                b if b < BYTES_IN_TIB => IECUnit::Gibibyte(b / BYTES_IN_GIB, b),
+                b if b < BYTES_IN_PIB => IECUnit::Tebibyte(b / BYTES_IN_TIB, b),
+                b if b < BYTES_IN_EIB => IECUnit::Pebibyte(b / BYTES_IN_PIB, b),
                 _ => IECUnit::Exbibyte(bytes / BYTES_IN_EIB, bytes),
             }
         }
@@ -273,12 +273,12 @@ pub mod ies_format {
         #[cfg(not(tarpaulin_include))]
         pub fn get_values(&self) -> (f64, f64) {
             match self {
-                IECUnit::Bytes(value_h, value_b)
-                | IECUnit::Kibibytes(value_h, value_b)
-                | IECUnit::Mibibytes(value_h, value_b)
-                | IECUnit::Gibibytes(value_h, value_b)
-                | IECUnit::Tebibytes(value_h, value_b)
-                | IECUnit::Pebibytes(value_h, value_b)
+                IECUnit::Byte(value_h, value_b)
+                | IECUnit::Kibibyte(value_h, value_b)
+                | IECUnit::Mebibyte(value_h, value_b)
+                | IECUnit::Gibibyte(value_h, value_b)
+                | IECUnit::Tebibyte(value_h, value_b)
+                | IECUnit::Pebibyte(value_h, value_b)
                 | IECUnit::Exbibyte(value_h, value_b) => (*value_h, *value_b),
                 IECUnit::Overflow => (f64::INFINITY, f64::INFINITY),
             }
@@ -287,7 +287,7 @@ pub mod ies_format {
 
     impl Default for IECUnit {
         fn default() -> Self {
-            IECUnit::Bytes(0.0, 0.0)
+            IECUnit::Byte(0.0, 0.0)
         }
     }
 
@@ -348,12 +348,12 @@ pub mod ies_format {
     impl Display for IECUnit {
         fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
             match self {
-                IECUnit::Bytes(_, bytes) => write!(f, "{:.2} bytes", bytes),
-                IECUnit::Kibibytes(kb, _) => write!(f, "{:.2} KiB", kb),
-                IECUnit::Mibibytes(mb, _) => write!(f, "{:.2} MiB", mb),
-                IECUnit::Gibibytes(gb, _) => write!(f, "{:.2} GiB", gb),
-                IECUnit::Tebibytes(tb, _) => write!(f, "{:.2} TiB", tb),
-                IECUnit::Pebibytes(pb, _) => write!(f, "{:.2} PiB", pb),
+                IECUnit::Byte(_, bytes) => write!(f, "{:.2} B", bytes),
+                IECUnit::Kibibyte(kb, _) => write!(f, "{:.2} KiB", kb),
+                IECUnit::Mebibyte(mb, _) => write!(f, "{:.2} MiB", mb),
+                IECUnit::Gibibyte(gb, _) => write!(f, "{:.2} GiB", gb),
+                IECUnit::Tebibyte(tb, _) => write!(f, "{:.2} TiB", tb),
+                IECUnit::Pebibyte(pb, _) => write!(f, "{:.2} PiB", pb),
                 IECUnit::Exbibyte(eb, _) => write!(f, "{:.2} EiB", eb),
                 IECUnit::Overflow => write!(f, "Overflow"),
             }
