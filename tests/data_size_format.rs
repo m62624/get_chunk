@@ -62,6 +62,53 @@ mod size_format {
                 SIUnit::Exabyte(1.0, 1_000_000_000_000_000_000.0)
             );
         }
+
+        mod ops {
+            use super::*;
+            use get_chunk::data_size_format::IntoEnumIterator;
+
+            #[test]
+            fn add_t_0() {
+                let mut next_size = SISize::iter();
+                next_size.next();
+                for (prev, next) in SISize::iter().zip(next_size) {
+                    assert_eq!(
+                        SIUnit::new(500.0, prev) + SIUnit::new(500.0, prev),
+                        SIUnit::new(1.0, next)
+                    );
+                }
+            }
+
+            #[test]
+            fn sub_t_0() {
+                let mut next_size = SISize::iter();
+                next_size.next();
+                for (prev, next) in SISize::iter().zip(next_size) {
+                    assert_eq!(
+                        SIUnit::new(1.0, next) - SIUnit::new(100.0, prev),
+                        SIUnit::new(900.0, prev)
+                    );
+                }
+            }
+
+            #[test]
+            fn mul_t_0() {
+                let mut next_size = SISize::iter();
+                next_size.next();
+                for (prev, next) in SISize::iter().zip(next_size) {
+                    assert_eq!(SIUnit::new(500.0, prev) * 2.0, SIUnit::new(1.0, next));
+                }
+            }
+
+            #[test]
+            fn div_t_0() {
+                let mut next_size = SISize::iter();
+                next_size.next();
+                for (prev, next) in SISize::iter().zip(next_size) {
+                    assert_eq!(SIUnit::new(1.0, next) / 2.0, SIUnit::new(500.0, prev));
+                }
+            }
+        }
     }
 
     mod iec {
@@ -124,6 +171,53 @@ mod size_format {
                 IECUnit::new(1.0, IECSize::Exbibyte),
                 IECUnit::Exbibyte(1.0, 1_152_921_504_606_846_976.0)
             );
+        }
+
+        mod ops {
+            use super::*;
+            use get_chunk::data_size_format::IntoEnumIterator;
+
+            #[test]
+            fn add_t_0() {
+                let mut next_size = IECSize::iter();
+                next_size.next();
+                for (prev, next) in IECSize::iter().zip(next_size) {
+                    assert_eq!(
+                        IECUnit::new(512.0, prev) + IECUnit::new(512.0, prev),
+                        IECUnit::new(1.0, next)
+                    );
+                }
+            }
+
+            #[test]
+            fn sub_t_0() {
+                let mut next_size = IECSize::iter();
+                next_size.next();
+                for (prev, next) in IECSize::iter().zip(next_size) {
+                    assert_eq!(
+                        IECUnit::new(1.0, next) - IECUnit::new(124.0, prev),
+                        IECUnit::new(900.0, prev)
+                    );
+                }
+            }
+
+            #[test]
+            fn mul_t_0() {
+                let mut next_size = IECSize::iter();
+                next_size.next();
+                for (prev, next) in IECSize::iter().zip(next_size) {
+                    assert_eq!(IECUnit::new(512.0, prev) * 2.0, IECUnit::new(1.0, next));
+                }
+            }
+
+            #[test]
+            fn div_t_0() {
+                let mut next_size = IECSize::iter();
+                next_size.next();
+                for (prev, next) in IECSize::iter().zip(next_size) {
+                    assert_eq!(IECUnit::new(1.0, next) / 2.0, IECUnit::new(512.0, prev));
+                }
+            }
         }
     }
 }
