@@ -1,6 +1,6 @@
 #[cfg(feature = "size_format")]
 mod size_format {
-    use get_chunk::data_size_format::{ies_format::*, si_format::*, IntoEnumIterator};
+    use get_chunk::data_size_format::{ies_format::*, si_format::*};
 
     #[test]
     fn auto_si_t_0() {
@@ -26,6 +26,7 @@ mod size_format {
         }
     }
 
+    #[test]
     fn auto_iec_t_0() {
         let values = [
             BYTES_IN_KIB,
