@@ -175,6 +175,7 @@ pub mod si {
     }
 
     impl Display for SIUnit {
+        #[cfg(not(tarpaulin_include))]
         fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
             match self {
                 SIUnit::Byte(_, bytes) => write!(f, "{:.2} B", bytes),
@@ -342,6 +343,7 @@ pub mod ies {
     }
 
     impl Display for IECUnit {
+        #[cfg(not(tarpaulin_include))]
         fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
             match self {
                 IECUnit::Byte(_, bytes) => write!(f, "{:.2} B", bytes),
