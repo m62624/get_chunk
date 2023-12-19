@@ -6,9 +6,7 @@ use strum_macros::EnumIter;
 impl From<si::SIUnit> for ies::IECUnit {
     fn from(si_unit: si::SIUnit) -> Self {
         match si_unit {
-            si::SIUnit::Byte(value_h, value_b) => {
-                ies::IECUnit::Byte(value_h, value_b)
-            }
+            si::SIUnit::Byte(value_h, value_b) => ies::IECUnit::Byte(value_h, value_b),
             si::SIUnit::Overflow => ies::IECUnit::Overflow,
             _ => ies::IECUnit::auto(si_unit.get_values().1),
         }
@@ -18,9 +16,7 @@ impl From<si::SIUnit> for ies::IECUnit {
 impl From<ies::IECUnit> for si::SIUnit {
     fn from(iec_unit: ies::IECUnit) -> Self {
         match iec_unit {
-            ies::IECUnit::Byte(value_h, value_b) => {
-                si::SIUnit::Byte(value_h, value_b)
-            }
+            ies::IECUnit::Byte(value_h, value_b) => si::SIUnit::Byte(value_h, value_b),
             ies::IECUnit::Overflow => si::SIUnit::Overflow,
             _ => si::SIUnit::auto(iec_unit.get_values().1),
         }
