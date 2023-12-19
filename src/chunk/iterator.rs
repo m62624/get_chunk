@@ -55,10 +55,10 @@ impl FilePack {
 /// The `FileIter` provides a synchronous file iterator designed to read data chunks from a file.
 ///
 /// It operates in two modes:
-/// 1. **Auto Mode (default):** Dynamically determines an optimal chunk size based on the previous read time,
+/// 1. **[`Auto Mode`](super::data_chunk::ChunkSize::Auto) (default):** Dynamically determines an optimal chunk size based on the previous read time,
 ///    adjusting it relative to the available RAM (85% available per iteration, i.e.,
 ///    if a chunk is too big and the system cannot process it, it is cut down to 85%.).
-/// 2. **Fixed Size Mode:** Allows users to manually set the chunk size, with any remaining data carried over
+/// 2. **[`Fixed Size Mode`](super::data_chunk::ChunkSize):** Allows users to manually set the chunk size, with any remaining data carried over
 ///    to the next iteration as a single chunk.
 
 #[cfg_attr(feature = "debug", derive(Debug))]

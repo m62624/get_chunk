@@ -1,7 +1,7 @@
 use sysinfo::{RefreshKind, System, SystemExt};
 
 ///
-/// Version: Sync
+/// # Version: Sync
 ///
 /// This module defines the [FileIter](iterator::FileIter) struct, which represents a synchronous file processing unit.
 /// It is designed to work as an iterator, reading chunks of data from a file and providing information
@@ -10,7 +10,7 @@ use sysinfo::{RefreshKind, System, SystemExt};
 pub mod iterator;
 
 ///
-/// Version: Async
+/// # Version: Async
 /// 
 /// This module defines the [FileStream](stream::FileStream) struct, which represents an asynchronous file processing unit.
 /// It is designed to work as an iterator, reading chunks of data from a file and providing information
