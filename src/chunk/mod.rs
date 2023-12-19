@@ -18,7 +18,7 @@ pub mod iterator;
 /// processing is a requirement.
 pub mod stream;
 
-#[derive(Debug)]
+#[cfg_attr(feature = "debug", derive(Debug))]
 /// A structure that stores the information needed to determine the `optimal` chunk size
 pub struct Memory {
     /// Here we store an object that can store various data about the system
@@ -44,7 +44,7 @@ impl Memory {
 
 pub mod data_chunk {
 
-    #[derive(Debug)]
+    #[cfg_attr(feature = "debug", derive(Debug))]
     pub struct Chunk {
         pub value: Vec<u8>,
         pub bytes_per_second: f64,
@@ -63,14 +63,14 @@ pub mod data_chunk {
         Bytes(usize),
     }
 
-    #[derive(Debug)]
+    #[cfg_attr(feature = "debug", derive(Debug))]
     pub struct ChunkInfo {
         pub now_bytes_per_second: f64,
         pub mode: ChunkSize,
         pub prev_bytes_per_second: f64,
     }
 
-    #[derive(Debug)]
+    #[cfg_attr(feature = "debug", derive(Debug))]
     pub struct FileInfo {
         pub size: f64,
         pub start_position: usize,

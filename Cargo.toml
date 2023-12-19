@@ -42,3 +42,6 @@ size_format = ["dep:strum", "dep:strum_macros"]
 
 # Dependencies for unit tests using Tokio macros and a multi-threaded runtime.
 tests = ["tokio/macros", "tokio/rt-multi-thread"]
+
+# activates impl debug
+debug = []

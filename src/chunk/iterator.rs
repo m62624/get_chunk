@@ -9,7 +9,7 @@ use std::{
     io::{self, BufReader, Read},
 };
 
-#[derive(Debug)]
+#[cfg_attr(feature = "debug", derive(Debug))]
 struct FilePack {
     metadata: FileInfo,
     buffer: BufReader<File>,
@@ -61,7 +61,7 @@ impl FilePack {
 /// 2. **Fixed Size Mode:** Allows users to manually set the chunk size, with any remaining data carried over
 ///    to the next iteration as a single chunk.
 
-#[derive(Debug)]
+#[cfg_attr(feature = "debug", derive(Debug))]
 pub struct FileIter {
     memory: Memory,
     file: FilePack,

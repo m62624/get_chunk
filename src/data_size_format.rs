@@ -51,7 +51,8 @@ pub mod si_format {
 
     /// Represents different units of data size, allowing for conversion between human-readable
     /// representations and precise byte values.
-    #[derive(PartialOrd, PartialEq, Debug, Clone, Copy, EnumIter)]
+    #[cfg_attr(feature = "debug", derive(Debug))]
+    #[derive(PartialOrd, PartialEq, Clone, Copy, EnumIter)]
     pub enum SIUnit {
         Bytes(f64, f64),
         Kilobytes(f64, f64),
@@ -62,7 +63,8 @@ pub mod si_format {
         Exabytes(f64, f64),
         Overflow,
     }
-
+    #[cfg_attr(feature = "debug", derive(Debug))]
+    #[derive(Clone, Copy, EnumIter)]
     pub enum SISize {
         Bytes,
         Kilobytes,
@@ -215,7 +217,8 @@ pub mod ies_format {
 
     /// Represents different units of data size, allowing for conversion between human-readable
     /// representations and precise byte values.
-    #[derive(PartialOrd, PartialEq, Debug, Clone, Copy, EnumIter)]
+    #[cfg_attr(feature = "debug", derive(Debug))]
+    #[derive(PartialOrd, PartialEq, Clone, Copy, EnumIter)]
     pub enum IECUnit {
         Bytes(f64, f64),
         Kibibytes(f64, f64),
@@ -227,6 +230,8 @@ pub mod ies_format {
         Overflow,
     }
 
+    #[cfg_attr(feature = "debug", derive(Debug))]
+    #[derive(Clone, Copy, EnumIter)]
     pub enum IECSize {
         Bytes,
         Kibibytes,
