@@ -79,3 +79,53 @@ async fn main() -> std::io::Result<()> {
     Ok(())
 }
 ```
+
+# How it works
+
+The `calculate_chunk` function in the `ChunkSize` enum determines the optimal chunk size based on various parameters. Here's a breakdown of how the size is calculated:
+
+1. **Auto Mode:**
+   - If the previous read time (`prev`) is greater than zero:
+     - If the current read time (`now`) is also greater than zero:
+       - If `now` is less than `prev`, decrease the chunk size using `decrease_chunk` method.
+       - If `now` is greater than or equal to `prev`, increase the chunk size using `increase_chunk` method.
+     - If `now` is zero or negative, maintain the previous chunk size (`prev`).
+   - If the previous read time is zero or negative, use the default chunk size based on the file size and available *RAM*.
+
+2. **Percent Mode:**
+   - Calculate the chunk size as a percentage of the total file size using the `percentage_chunk` method. The percentage is capped between 0.1% and 100%.
+
+3. **Bytes Mode:**
+   - Calculate the chunk size based on the specified number of bytes using the `bytes_chunk` method. The size is capped by the file size and available *RAM*.
+
+### Key Formulas:
+
+- **Increase Chunk Size:**
+
+```rust
+(prev * (1.0 + ((now - prev) / prev).min(0.15))).min(ram_available * 0.85).min(f64::MAX)
+```
+
+- **Decrease Chunk Size:**
+
+```rust
+(prev * (1.0 - ((prev - now) / prev).min(0.45))).min(ram_available * 0.85).min(f64::MAX)
+```
+
+- **Default Chunk Size:**
+
+```rust
+(file_size * (0.1 / 100.0)).min(ram_available * 0.85).min(f64::MAX)
+```
+
+- **Percentage Chunk Size:**
+
+```rust
+(file_size * (percentage.min(100.0).max(0.1) / 100.0)).min(ram_available * 0.85)
+```
+
+- **Bytes Chunk Size:**
+
+```rust
+(file_size * (bytes.min(file_size as usize) as f64 / 100.0)).min(ram_available * 0.85)
+```
