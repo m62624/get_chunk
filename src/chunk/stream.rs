@@ -116,6 +116,7 @@ impl FileStream {
     ///             }
     ///             None => {
     ///                 println!("End of file");
+    ///                 break;
     ///             }
     ///         }
     ///     }
