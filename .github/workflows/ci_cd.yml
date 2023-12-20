@@ -46,7 +46,7 @@ jobs:
       run: cargo clippy --all-features -- -D warnings
 
   tests:
-     # if: github.ref == 'refs/heads/main'
+      if: github.ref != 'refs/heads/main'
       needs: [linter-check]
       runs-on: ubuntu-latest
       steps:
@@ -62,7 +62,7 @@ jobs:
           cargo test --all-features -- --test-threads=1
 
   coverage-tests:
-     # if: github.ref == 'refs/heads/main'
+      if: github.ref == 'refs/heads/main'
       needs: [linter-check]
       runs-on: ubuntu-latest
       steps:
@@ -88,7 +88,6 @@ jobs:
         uses: codecov/codecov-action@v3
         with:
           fail_ci_if_error: true
-          # token: ${{ secrets.CODECOV_TOKEN }}
           files: cobertura.xml
           verbose: true
 
