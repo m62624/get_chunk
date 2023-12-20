@@ -6,7 +6,7 @@ mod size_format {
 
         #[test]
         fn from_to_t_0() {
-            use get_chunk::data_size_format::ies::*;
+            use get_chunk::data_size_format::iec::*;
 
             for size in SISize::iter() {
                 let si_unit = SIUnit::new(50.0, size);
@@ -186,7 +186,7 @@ mod size_format {
     }
 
     mod iec {
-        use get_chunk::data_size_format::{ies::*, IntoEnumIterator};
+        use get_chunk::data_size_format::{iec::*, IntoEnumIterator};
 
         #[test]
         fn from_to_t_0() {

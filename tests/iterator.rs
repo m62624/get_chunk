@@ -4,7 +4,7 @@ use temp_files::{FileTest, FILE_TEST};
 #[cfg(feature = "size_format")]
 mod size_format {
     use super::*;
-    use get_chunk::data_size_format::ies::{IECSize, IECUnit};
+    use get_chunk::data_size_format::iec::{IECSize, IECUnit};
     use get_chunk::iterator::FileIter;
     use get_chunk::ChunkSize;
     use std::io;

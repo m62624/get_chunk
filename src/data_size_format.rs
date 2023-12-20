@@ -52,16 +52,16 @@ pub mod si {
     }
 
     #[cfg(not(tarpaulin_include))]
-    impl From<SISize> for ies::IECSize {
+    impl From<SISize> for iec::IECSize {
         fn from(si_size: SISize) -> Self {
             match si_size {
-                SISize::Byte => ies::IECSize::Byte,
-                SISize::Kilobyte => ies::IECSize::Kibibyte,
-                SISize::Megabyte => ies::IECSize::Mebibyte,
-                SISize::Gigabyte => ies::IECSize::Gibibyte,
-                SISize::Terabyte => ies::IECSize::Tebibyte,
-                SISize::Petabyte => ies::IECSize::Pebibyte,
-                SISize::Exabyte => ies::IECSize::Exbibyte,
+                SISize::Byte => iec::IECSize::Byte,
+                SISize::Kilobyte => iec::IECSize::Kibibyte,
+                SISize::Megabyte => iec::IECSize::Mebibyte,
+                SISize::Gigabyte => iec::IECSize::Gibibyte,
+                SISize::Terabyte => iec::IECSize::Tebibyte,
+                SISize::Petabyte => iec::IECSize::Pebibyte,
+                SISize::Exabyte => iec::IECSize::Exbibyte,
             }
         }
     }
@@ -169,12 +169,12 @@ pub mod si {
         }
     }
 
-    impl From<SIUnit> for ies::IECUnit {
+    impl From<SIUnit> for iec::IECUnit {
         fn from(si_unit: si::SIUnit) -> Self {
             match si_unit {
-                SIUnit::Byte(value_h, value_b) => ies::IECUnit::Byte(value_h, value_b),
-                SIUnit::Overflow => ies::IECUnit::Overflow,
-                _ => ies::IECUnit::auto(si_unit.get_values().1),
+                SIUnit::Byte(value_h, value_b) => iec::IECUnit::Byte(value_h, value_b),
+                SIUnit::Overflow => iec::IECUnit::Overflow,
+                _ => iec::IECUnit::auto(si_unit.get_values().1),
             }
         }
     }
@@ -215,7 +215,7 @@ pub mod si {
 /// Similar to the SI module, it contains constants for size thresholds and a data structure
 /// (`IECUnit`) representing different units of data size. Additionally, it provides methods
 /// for converting and displaying data sizes in human-readable formats according to the IEC standard.
-pub mod ies {
+pub mod iec {
     use super::*;
     // IEC format.
     /// Kibibyte in bytes.
@@ -376,11 +376,11 @@ pub mod ies {
         }
     }
 
-    impl From<ies::IECUnit> for si::SIUnit {
-        fn from(iec_unit: ies::IECUnit) -> Self {
+    impl From<iec::IECUnit> for si::SIUnit {
+        fn from(iec_unit: iec::IECUnit) -> Self {
             match iec_unit {
-                ies::IECUnit::Byte(value_h, value_b) => si::SIUnit::Byte(value_h, value_b),
-                ies::IECUnit::Overflow => si::SIUnit::Overflow,
+                iec::IECUnit::Byte(value_h, value_b) => si::SIUnit::Byte(value_h, value_b),
+                iec::IECUnit::Overflow => si::SIUnit::Overflow,
                 _ => si::SIUnit::auto(iec_unit.get_values().1),
             }
         }
