@@ -59,7 +59,7 @@ jobs:
       - name: Run coverage tests
         run: |
           docker run --security-opt seccomp=unconfined ${{ env.IMAGE_DOCKER }}:latest \
-          cargo test --all-features
+          cargo test --all-features -- --test-threads=1
 
   coverage-tests:
      # if: github.ref == 'refs/heads/main'
@@ -77,7 +77,8 @@ jobs:
           docker run --security-opt seccomp=unconfined ${{ env.IMAGE_DOCKER }}:latest \
           cargo tarpaulin \
           --all-features \
-          --engine llvm --out xml --output-dir ./coverage/
+          --engine llvm --out xml --output-dir ./coverage/ \
+          -- --test-threads=1
       # Шаг для копирования отчета о покрытии из контейнера
       - name: Copy coverage report from container
         run: |
