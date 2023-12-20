@@ -63,6 +63,14 @@ mod size_format {
             );
         }
 
+        #[test]
+        fn overflow_t_0() {
+            assert_eq!(
+                SIUnit::new(f64::MAX * 2.0, SISize::Gigabyte),
+                SIUnit::Overflow
+            )
+        }
+
         mod ops {
             use super::*;
             use get_chunk::data_size_format::IntoEnumIterator;
@@ -80,6 +88,22 @@ mod size_format {
             }
 
             #[test]
+            fn add_t_1() {
+                assert_eq!(
+                    SIUnit::new(f64::MAX, SISize::Byte) + SIUnit::new(f64::MAX, SISize::Byte),
+                    SIUnit::Overflow
+                );
+            }
+
+            #[test]
+            fn add_t_2() {
+                assert_eq!(
+                    SIUnit::new(f64::MAX, SISize::Byte) + SIUnit::Overflow,
+                    SIUnit::Overflow
+                );
+            }
+
+            #[test]
             fn sub_t_0() {
                 let mut next_size = SISize::iter();
                 next_size.next();
@@ -92,6 +116,26 @@ mod size_format {
             }
 
             #[test]
+            fn sub_t_1() {
+                let mut next_size = SISize::iter();
+                next_size.next();
+                for (prev, next) in SISize::iter().zip(next_size) {
+                    assert_eq!(
+                        SIUnit::new(1.0, prev) - SIUnit::new(1.0, next),
+                        SIUnit::default()
+                    );
+                }
+            }
+
+            #[test]
+            fn sub_t_2() {
+                assert_eq!(
+                    SIUnit::new(1.0, SISize::Gigabyte) - SIUnit::Overflow,
+                    SIUnit::Overflow
+                );
+            }
+
+            #[test]
             fn mul_t_0() {
                 let mut next_size = SISize::iter();
                 next_size.next();
@@ -101,12 +145,32 @@ mod size_format {
             }
 
             #[test]
+            fn mul_t_1() {
+                assert_eq!(SIUnit::new(f64::MAX, SISize::Byte) * 2.0, SIUnit::Overflow);
+            }
+
+            #[test]
+            fn mul_t_2() {
+                assert_eq!(SIUnit::Overflow * 2.0, SIUnit::Overflow);
+            }
+
+            #[test]
             fn div_t_0() {
                 let mut next_size = SISize::iter();
                 next_size.next();
                 for (prev, next) in SISize::iter().zip(next_size) {
                     assert_eq!(SIUnit::new(1.0, next) / 2.0, SIUnit::new(500.0, prev));
                 }
+            }
+
+            #[test]
+            fn div_t_1() {
+                assert_eq!(SIUnit::new(1.0, SISize::Byte) / 0.0, SIUnit::Overflow);
+            }
+
+            #[test]
+            fn div_t_2() {
+                assert_eq!(SIUnit::Overflow / 2.0, SIUnit::Overflow);
             }
         }
     }
@@ -136,6 +200,14 @@ mod size_format {
             for (bytes, unit) in values.iter().zip(units.iter()) {
                 assert_eq!(IECUnit::auto(*bytes), *unit);
             }
+        }
+
+        #[test]
+        fn overflow_t_0() {
+            assert_eq!(
+                IECUnit::new(f64::MAX * 2.0, IECSize::Gibibyte),
+                IECUnit::Overflow
+            )
         }
 
         #[test]
@@ -190,6 +262,22 @@ mod size_format {
             }
 
             #[test]
+            fn add_t_1() {
+                assert_eq!(
+                    IECUnit::new(f64::MAX, IECSize::Byte) + IECUnit::new(f64::MAX, IECSize::Byte),
+                    IECUnit::Overflow
+                );
+            }
+
+            #[test]
+            fn add_t_2() {
+                assert_eq!(
+                    IECUnit::new(f64::MAX, IECSize::Byte) + IECUnit::Overflow,
+                    IECUnit::Overflow
+                );
+            }
+
+            #[test]
             fn sub_t_0() {
                 let mut next_size = IECSize::iter();
                 next_size.next();
@@ -202,6 +290,26 @@ mod size_format {
             }
 
             #[test]
+            fn sub_t_1() {
+                let mut next_size = IECSize::iter();
+                next_size.next();
+                for (prev, next) in IECSize::iter().zip(next_size) {
+                    assert_eq!(
+                        IECUnit::new(1.0, prev) - IECUnit::new(1.0, next),
+                        IECUnit::default()
+                    );
+                }
+            }
+
+            #[test]
+            fn sub_t_2() {
+                assert_eq!(
+                    IECUnit::new(1.0, IECSize::Gibibyte) - IECUnit::Overflow,
+                    IECUnit::Overflow
+                );
+            }
+
+            #[test]
             fn mul_t_0() {
                 let mut next_size = IECSize::iter();
                 next_size.next();
@@ -211,12 +319,35 @@ mod size_format {
             }
 
             #[test]
+            fn mul_t_1() {
+                assert_eq!(
+                    IECUnit::new(f64::MAX, IECSize::Byte) * 2.0,
+                    IECUnit::Overflow
+                );
+            }
+
+            #[test]
+            fn mul_t_2() {
+                assert_eq!(IECUnit::Overflow * 2.0, IECUnit::Overflow);
+            }
+
+            #[test]
             fn div_t_0() {
                 let mut next_size = IECSize::iter();
                 next_size.next();
                 for (prev, next) in IECSize::iter().zip(next_size) {
                     assert_eq!(IECUnit::new(1.0, next) / 2.0, IECUnit::new(512.0, prev));
                 }
+            }
+
+            #[test]
+            fn div_t_1() {
+                assert_eq!(IECUnit::new(1.0, IECSize::Byte) / 0.0, IECUnit::Overflow);
+            }
+
+            #[test]
+            fn div_t_2() {
+                assert_eq!(IECUnit::Overflow / 2.0, IECUnit::Overflow);
             }
         }
     }

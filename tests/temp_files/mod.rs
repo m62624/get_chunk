@@ -1,4 +1,4 @@
-const FILE_TEST: &str = "./test_file";
+pub const FILE_TEST: &str = "./test_file";
 const CHUNK_SIZE: usize = 100000; // Размер порции (в байтах)
 
 use home::home_dir;
@@ -15,13 +15,13 @@ use uuid::Uuid;
 
 #[derive(Debug)]
 pub struct FileTest {
-    pub file_path: String,
+    pub path: String,
     pub hash_data: String,
 }
 
 impl FileTest {
-    pub fn create_empty_file(file_path: &str, size_bytes: f64) -> io::Result<()> {
-        let mut file = File::create(file_path)?;
+    pub fn create_empty_file(path: &str, size_bytes: f64) -> io::Result<()> {
+        let mut file = File::create(path)?;
         // Устанавливаем размер файла с помощью seek
         file.seek(SeekFrom::Start(size_bytes as u64))?;
 
@@ -35,7 +35,7 @@ impl FileTest {
         let mut file = OpenOptions::new()
             .create(true)
             .append(true)
-            .open(self.file_path.clone())?;
+            .open(self.path.clone())?;
 
         // Записываем байты в файл
         file.write_all(bytes)?;
@@ -44,7 +44,7 @@ impl FileTest {
     }
 
     fn update_from_default(&mut self) -> io::Result<()> {
-        self.hash_data = Self::calculate_hash_data(&self.file_path)?;
+        self.hash_data = Self::calculate_hash_data(&self.path)?;
         Ok(())
     }
 
@@ -70,8 +70,8 @@ impl FileTest {
         format!("{}-{}", input, uuid)
     }
 
-    fn calculate_hash_data(file_path: &str) -> io::Result<String> {
-        let mut file = File::open(file_path)?;
+    fn calculate_hash_data(path: &str) -> io::Result<String> {
+        let mut file = File::open(path)?;
 
         let mut hasher = Sha256::new();
         let mut buffer = Vec::new();
@@ -116,7 +116,7 @@ impl FileTest {
 
         file.flush()?;
         Ok(FileTest {
-            file_path: path.to_string(),
+            path: path.to_string(),
             hash_data: Self::calculate_hash_data(path.as_ref())?,
         })
     }
@@ -131,7 +131,7 @@ impl PartialEq for FileTest {
 impl Default for FileTest {
     fn default() -> Self {
         Self {
-            file_path: Self::add_uuid_to_string(&Self::expand_path(FILE_TEST.to_string())),
+            path: Self::add_uuid_to_string(&Self::expand_path(FILE_TEST.to_string())),
             hash_data: Default::default(),
         }
     }
@@ -139,7 +139,7 @@ impl Default for FileTest {
 
 impl Drop for FileTest {
     fn drop(&mut self) {
-        if let Err(e) = fs::remove_file(&self.file_path) {
+        if let Err(e) = fs::remove_file(&self.path) {
             process::exit(e.raw_os_error().unwrap_or(1));
         }
     }
