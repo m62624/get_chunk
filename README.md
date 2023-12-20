@@ -74,6 +74,7 @@ async fn main() -> std::io::Result<()> {
             }
             None => {
                 println!("End of file");
+                break;
             }
         }
     }
