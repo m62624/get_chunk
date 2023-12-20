@@ -95,7 +95,7 @@ pub struct FileStream {
 }
 
 impl FileStream {
-    /// Creates a new `FileIter` instance.
+    /// Creates a new `FileIter` instance. The default setting is automatic detection of the chunk size
     /// ### Arguments
     /// * `path` - A path to the file.
     /// ## Example
@@ -105,7 +105,7 @@ impl FileStream {
     ///
     /// #[tokio::main]
     /// async fn main() -> std::io::Result<()> {
-    /// 
+    ///
     ///     let mut file_stream = FileStream::new("file.txt").await?;
     ///     while let Ok(chunk) = file_stream.try_next().await {
     ///         match chunk {
@@ -119,7 +119,7 @@ impl FileStream {
     ///             }
     ///         }
     ///     }
-    /// 
+    ///
     ///     Ok(())
     /// }
     /// ```

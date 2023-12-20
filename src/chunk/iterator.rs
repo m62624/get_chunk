@@ -67,7 +67,7 @@ pub struct FileIter {
 }
 
 impl FileIter {
-    /// Creates a new `FileIter` instance.
+    /// Creates a new `FileIter` instance. The default setting is automatic detection of the chunk size
     /// ### Arguments
     /// * `path` - A path to the file.
     /// ## Example

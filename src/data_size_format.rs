@@ -89,6 +89,39 @@ pub mod si {
             }
         }
 
+        /// Converts a byte size into the appropriate International System of Units (SI) unit.
+        ///
+        /// This function is part of the SIUnit enum and supports units such as Byte, Kilobyte, Megabyte, Gigabyte, Terabyte,
+        /// Petabyte, Exabyte, and Overflow. The conversion is based on the SI standard for decimal prefixes.
+        ///
+        /// ### Arguments
+        ///
+        /// * `bytes` - A positive `f64` representing the size in bytes.
+        ///
+        /// ### Returns
+        ///
+        /// * An `SIUnit` enum representing the converted size.
+        ///
+        /// ### Example
+        ///
+        /// ```
+        /// use get_chunk::data_size_format::si::SIUnit;
+        /// use get_chunk::iterator::FileIter;
+        ///
+        /// fn main() -> std::io::Result<()> {
+        ///     let file_iter = FileIter::new("file.bin")?;
+        ///
+        ///     // Display format
+        ///     println!("{}", SIUnit::auto(file_iter.get_file_size()));
+        ///     // Output: 54.08 GB
+        ///
+        ///     // Debug format ( `debug` attribute is required )
+        ///     println!("{:?}", SIUnit::auto(file_iter.get_file_size()));
+        ///     // Output: Gigabyte(54.081281708, 54081281708.0)
+        ///
+        ///     Ok(())
+        /// }
+        /// ```
         pub fn auto(bytes: f64) -> SIUnit {
             if bytes.is_sign_negative() || bytes.is_nan() {
                 return SIUnit::default();
@@ -300,6 +333,39 @@ pub mod iec {
             }
         }
 
+        /// Converts a byte size into the appropriate International Electrotechnical Commission (IEC) unit.
+        ///
+        /// This function is part of the IECUnit enum and supports units such as Byte, Kibibyte, Mebibyte, Gibibyte, Tebibyte,
+        /// Pebibyte, Exbibyte, and Overflow. The conversion is based on the IEC standard for binary prefixes.
+        ///
+        /// ### Arguments
+        ///
+        /// * `bytes` - A positive `f64` representing the size in bytes.
+        ///
+        /// ### Returns
+        ///
+        /// * An `IECUnit` enum representing the converted size.
+        ///
+        /// ### Example
+        ///
+        /// ```
+        /// use get_chunk::data_size_format::iec::IECUnit;
+        /// use get_chunk::iterator::FileIter;
+        ///
+        /// fn main() -> std::io::Result<()> {
+        ///     let mut file_iter = FileIter::new("file.bin")?;
+        ///
+        ///     // Display format
+        ///     println!("{}", IECUnit::auto(file_iter.get_file_size()));
+        ///     // Output: 50.37 GiB
+        ///
+        ///     // Debug format ( `debug` attribute is required )
+        ///     println!("{:?}", IECUnit::auto(file_iter.get_file_size()));
+        ///     // Output: Gibibyte(50.36711851879954, 54081281708.0)
+        ///
+        ///     Ok(())
+        /// }
+        /// ```
         pub fn auto(bytes: f64) -> IECUnit {
             if bytes.is_sign_negative() || bytes.is_nan() {
                 return IECUnit::default();
