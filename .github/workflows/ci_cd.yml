@@ -1,0 +1,101 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - "*"
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+'
+  pull_request:
+    branches:
+      - "*"
+
+env:
+  IMAGE_DOCKER: ghcr.io/${{ secrets.NAME_LOGIN }}/get_chunk
+  DOCKER_BUILDKIT: 1
+
+jobs:
+  # job для сборки образа (в нем будет происходит сборка и тестирование библиотеки)
+  build-image:
+    runs-on: ubuntu-latest
+    steps:
+      # Шаг для входа в Docker Registry
+      - name: Log in to `GitHub Docker Registry`
+        run: echo ${{ secrets.PAT_GITHUB }} | docker login ghcr.io -u ${{ secrets.NAME_LOGIN }} --password-stdin
+      # Шаг для клонирования репозитория
+      - name: Checkout code
+        uses: actions/checkout@v3
+      # Шаг для сборки и пуша образа (используем кэш прошлой сборки)
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      - name: Build and push
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          tags: ${{ env.IMAGE_DOCKER }}:latest
+          cache-from: type=registry,ref=${{ env.IMAGE_DOCKER }}:buildcache
+          cache-to: type=registry,ref=${{ env.IMAGE_DOCKER }}:buildcache,mode=max
+
+  linter-check:
+    needs: build-image
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Run linter
+      run: cargo clippy -- -D warnings
+
+  tests:
+     # if: github.ref == 'refs/heads/main'
+      needs: [linter-check]
+      runs-on: ubuntu-latest
+      steps:
+      # Шаг для входа в Docker Registry
+      - name: Log in to `GitHub Docker Registry`
+        run: echo ${{ secrets.PAT_GITHUB }} | docker login ghcr.io -u ${{ secrets.NAME_LOGIN }} --password-stdin
+      # Шаг для клонирования репозитория
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Run coverage tests
+        run: |
+          docker run --security-opt seccomp=unconfined ${{ env.IMAGE_DOCKER }}:latest \
+          cargo test --all-features
+
+  coverage-tests:
+     # if: github.ref == 'refs/heads/main'
+      needs: [linter-check]
+      runs-on: ubuntu-latest
+      steps:
+      # Шаг для входа в Docker Registry
+      - name: Log in to `GitHub Docker Registry`
+        run: echo ${{ secrets.PAT_GITHUB }} | docker login ghcr.io -u ${{ secrets.NAME_LOGIN }} --password-stdin
+      # Шаг для клонирования репозитория
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Run coverage tests
+        run: |
+          docker run --security-opt seccomp=unconfined ${{ env.IMAGE_DOCKER }}:latest \
+          cargo tarpaulin \
+          --all-features \
+          --engine llvm --out xml --output-dir ./coverage/
+      # Шаг для копирования отчета о покрытии из контейнера
+      - name: Copy coverage report from container
+        run: |
+          docker cp $(docker ps -lq):/usr/src/get_chunk/coverage/cobertura.xml .
+      # Шаг для отправки отчета о покрытии в Codecov
+      - name: Send coverage report to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          fail_ci_if_error: true
+          # token: ${{ secrets.CODECOV_TOKEN }}
+          files: cobertura.xml
+          verbose: true
+
+  package-publishing: 
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [coverage-tests]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Publish package
+      run: cargo publish --token ${{ secrets.CRATESIO_TOKEN }}
