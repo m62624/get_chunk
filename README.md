@@ -1,5 +1,7 @@
 # get_chunk
 
+[![codecov](https://codecov.io/gh/m62624/get_chunk/graph/badge.svg?token=2B7PB64PBO)](https://codecov.io/gh/m62624/get_chunk)
+
 ## About
 
 `get_chunk` is a library for creating file iterators or streams (asynchronous iterators),
