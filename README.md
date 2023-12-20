@@ -82,7 +82,17 @@ async fn main() -> std::io::Result<()> {
 
 # How it works
 
-The `calculate_chunk` function in the `ChunkSize` enum determines the optimal chunk size based on various parameters. Here's a breakdown of how the size is calculated:
+The `calculate_chunk` function in the `ChunkSize` enum determines the optimal chunk size based on various parameters. Here's a breakdown of how the size is calculated: 
+
+The variables `prev` and `now` represent the previous and current read time, respectively.
+
+**prev:**
+
+*Definition:* `prev` represents the time taken to read a piece of data in the previous iteration.
+
+**now:**
+
+*Definition:* `now` represents the current time taken to read the data fragment in the current iteration.
 
 1. **Auto Mode:**
    - If the previous read time (`prev`) is greater than zero:
