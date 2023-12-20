@@ -72,6 +72,46 @@ pub mod si {
     }
 
     impl SIUnit {
+        /// Creates a new instance of `SIUnit` based on the provided value and unit type.
+        ///
+        /// This function is part of the SIUnit enum and supports units such as Byte, Kilobyte, Megabyte, Gigabyte, Terabyte,
+        /// Petabyte, Exabyte, and Overflow. The conversion is based on the International System of Units (SI) standard for
+        /// decimal prefixes.
+        ///
+        /// ### Arguments
+        ///
+        /// * `value` - A positive `f64` representing the numeric value of the size.
+        /// * `unit_type` - An `SISize` enum specifying the unit type.
+        ///
+        /// ### Returns
+        ///
+        /// * An `SIUnit` enum representing the converted size.
+        ///
+        /// ### Example
+        ///
+        /// ```
+        /// use get_chunk::data_size_format::si::{SISize, SIUnit};
+        /// use get_chunk::iterator::FileIter;
+        /// use get_chunk::ChunkSize;
+        ///
+        /// fn main() -> std::io::Result<()> {
+        ///     // Set the fixed chunk size to 250 megabytes
+        ///     let file_iter = FileIter::new("file.bin")?.set_mode(ChunkSize::Bytes(
+        ///         SIUnit::new(250.0, SISize::Megabyte).into(),
+        ///     ));
+        ///
+        ///     for chunk in file_iter {
+        ///         match chunk {
+        ///             Ok(data) => {
+        ///                 // Some calculations with chunk
+        ///                 // .....
+        ///             }
+        ///             Err(_) => break,
+        ///         }
+        ///     }
+        ///     Ok(())
+        /// }
+        /// ```
         pub fn new(value: f64, unit_type: SISize) -> SIUnit {
             if value.is_infinite() || value > f64::MAX {
                 return SIUnit::Overflow;
@@ -138,6 +178,11 @@ pub mod si {
             }
         }
 
+        /// Retrieves the numeric values associated with an instance of the `SIUnit` enum.
+        ///
+        /// ### Returns
+        ///
+        /// A tuple `(value_h, value_b)` representing the high-level numeric value and its equivalent in bytes.
         #[cfg(not(tarpaulin_include))]
         pub fn get_values(&self) -> (f64, f64) {
             match self {
@@ -316,6 +361,46 @@ pub mod iec {
     }
 
     impl IECUnit {
+        /// Creates a new instance of `IECUnit` based on the provided value and unit type.
+        ///
+        /// This function is part of the IECUnit enum and supports units such as Byte, Kibibyte, Mebibyte, Gibibyte, Tebibyte,
+        /// Pebibyte, Exbibyte, and Overflow. The conversion is based on the International Electrotechnical Commission (IEC)
+        /// standard for binary prefixes.
+        ///
+        /// ### Arguments
+        ///
+        /// * `value` - A positive `f64` representing the numeric value of the size.
+        /// * `unit_type` - An `IECSize` enum specifying the unit type.
+        ///
+        /// ### Returns
+        ///
+        /// * An `IECUnit` enum representing the converted size.
+        ///
+        /// ### Example
+        ///
+        /// ```
+        /// use get_chunk::data_size_format::iec::{IECSize, IECUnit};
+        /// use get_chunk::iterator::FileIter;
+        /// use get_chunk::ChunkSize;
+        ///
+        /// fn main() -> std::io::Result<()> {
+        ///     // Set the fixed chunk size to 250 mebibytes
+        ///     let file_iter = FileIter::new("file.bin")?.set_mode(ChunkSize::Bytes(
+        ///         IECUnit::new(250.0, IECSize::Mebibyte).into(),
+        ///     ));
+        ///
+        ///     for chunk in file_iter {
+        ///         match chunk {
+        ///             Ok(data) => {
+        ///                 // Some calculations with chunk
+        ///                 // .....
+        ///             }
+        ///             Err(_) => break,
+        ///         }
+        ///     }
+        ///     Ok(())
+        /// }
+        /// ```
         pub fn new(value: f64, unit_type: IECSize) -> IECUnit {
             if value.is_infinite() || value > f64::MAX {
                 return IECUnit::Overflow;
@@ -382,6 +467,11 @@ pub mod iec {
             }
         }
 
+        /// Retrieves the numeric values associated with an instance of the `IECUnit` enum.
+        ///
+        /// ### Returns
+        ///
+        /// A tuple `(value_h, value_b)` representing the high-level numeric value and its equivalent in bytes.
         #[cfg(not(tarpaulin_include))]
         pub fn get_values(&self) -> (f64, f64) {
             match self {

@@ -1,7 +1,7 @@
 //! # **About**
 //!
 //! `get_chunk` is a library designed to create file iterators or streams (asynchronous iterators).
-//! It specializes in efficient file chunking, allowing users to retrieve chunks of data each time `get_chunk` is called.
+//! The main task, the ability to retrieve chunk data especially from large files.
 //!
 //! **Key Features:**
 //! - **File Chunking:** Seamlessly divide files, including large ones, into chunks with each "Next" iteration.
