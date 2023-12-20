@@ -16,6 +16,7 @@ pub mod iterator;
 /// It is designed to work as an iterator, reading chunks of data from a file and providing information
 /// about the read chunks. The asynchronous version is suitable for scenarios where asynchronous
 /// processing is a requirement.
+#[cfg(feature = "stream")]
 pub mod stream;
 
 #[cfg_attr(feature = "debug", derive(Debug))]

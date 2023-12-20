@@ -99,7 +99,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Publish package
-      run: cargo publish --all-features --token ${{ secrets.CRATESIO_TOKEN }}
+      run: cargo publish --token ${{ secrets.CRATESIO_TOKEN }}
 
   create-release-on-github:
     needs: [package-publishing]
