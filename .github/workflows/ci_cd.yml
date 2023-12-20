@@ -102,13 +102,13 @@ jobs:
       run: cargo publish --token ${{ secrets.CRATESIO_TOKEN }}
 
   create-release-on-github:
-    needs: [build-image]
+    needs: [package-publishing]
     runs-on: ubuntu-latest
     steps:
       # Шаг для входа в Docker Registry
       - name: Log in to `GitHub Docker Registry`
         run: echo ${{ secrets.PAT_GITHUB }} | docker login ghcr.io -u ${{ secrets.NAME_LOGIN }} --password-stdin
-            # Шаг для клонирования репозитория
+      # Шаг для клонирования репозитория
       - name: Checkout code
         uses: actions/checkout@v3
       - name: Extract changelog content
@@ -123,7 +123,7 @@ jobs:
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
-          draft: true
+          draft: false
           tag_name: ${{ github.ref }}
           name: Release ${{github.ref_name}}
           body_path: temp_changelog.md
