@@ -74,9 +74,9 @@ impl FileIter {
     /// # Example
     /// ```
     /// use get_chunk::iterator::FileIter;
-    /// 
+    ///
     /// fn main() -> std::io::Result<()> {
-    /// 
+    ///
     ///     let file_iter = FileIter::new("file.txt")?;
     ///     for chunk in file_iter {
     ///         match chunk {
@@ -86,7 +86,7 @@ impl FileIter {
     ///             Err(_) => break,
     ///         }
     ///     }
-    /// 
+    ///
     ///     Ok(())
     /// }
     /// ```
@@ -98,10 +98,20 @@ impl FileIter {
         })
     }
 
+    /// Checks if the read operation is complete, returning `true` if the data buffer is empty.
+    ///
+    /// ---
+    /// **⚠️ Warning**\
+    /// This method does not guarantee that the entire file has been read. If the contents
+    /// of the file are modified or deleted during iterations, this method may still return `true`.
     pub fn is_read_complete(&self) -> bool {
         self.file.read_complete
     }
 
+    /// Returns the size of the file in bytes.
+    ///
+    /// ---
+    /// Use [`data_size_format`](crate::data_size_format) for comfortable reading and for calculating size
     pub fn get_file_size(&self) -> f64 {
         self.file.metadata.size
     }
