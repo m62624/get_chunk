@@ -24,9 +24,12 @@ Their purpose is to fetch data from files in chunks, maintaining efficiency.
   These structures don't keep track of the file's original state.
 
 ### Iterator version
-### Example
+
+---
+#### Example
 ```rust
 use get_chunk::iterator::FileIter;
+// Note: requires a `size_format` attribute.
 use get_chunk::data_size_format::iec::IECUnit;
 
 fn main() -> std::io::Result<()> {
@@ -48,8 +51,11 @@ fn main() -> std::io::Result<()> {
 ```
 
 ### Stream version
-### Example
+
+#### Example
 ```rust
+
+// Note: requires the `size_format` and `stream` attributes.
 use get_chunk::data_size_format::iec::IECUnit;
 use get_chunk::stream::{FileStream, StreamExt};
 
