@@ -139,3 +139,7 @@ The variables `prev` and `now` represent the previous and current read time, res
 ```rust
 (file_size * (bytes.min(file_size as usize) as f64 / 100.0)).min(ram_available * 0.85)
 ```
+
+---
+# License
+ [MIT License](./LICENSE).

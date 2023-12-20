@@ -6,7 +6,7 @@
 //! **Key Features:**
 //! - **File Chunking:** Seamlessly divide files, including large ones, into chunks with each "Next" iteration.
 //! - **Automatic chunking:** Dynamically adjusts chunk sizes for optimal performance.
-//! Efficiently manages memory by limiting large chunks to 85% of available free RAM.
+//! Efficiently manages memory by limiting large chunks to 85% of available free *RAM*.
 //! - **Modes:** Choose between automatic or manual tuning based on percentage or number of bytes.
 //!
 //! ---
