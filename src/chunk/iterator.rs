@@ -68,6 +68,29 @@ pub struct FileIter {
 }
 
 impl FileIter {
+    /// Creates a new `FileIter` instance.
+    /// # Arguments
+    /// * `path` - A path to the file.
+    /// # Example
+    /// ```
+    /// use get_chunk::iterator::FileIter;
+    /// 
+    /// fn main() -> std::io::Result<()> {
+    /// 
+    ///     let file_iter = FileIter::new("file.txt")?;
+    ///     for chunk in file_iter {
+    ///         match chunk {
+    ///             Ok(chunk) => {
+    ///                 // some calculations with chunk
+    ///             }
+    ///             Err(_) => break,
+    ///         }
+    ///     }
+    /// 
+    ///     Ok(())
+    /// }
+    /// ```
+    ///
     pub fn new<S: Into<Box<str>>>(path: S) -> io::Result<FileIter> {
         Ok(FileIter {
             memory: Memory::new(),
