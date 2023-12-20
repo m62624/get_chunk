@@ -2,7 +2,18 @@
 mod size_format {
 
     mod si {
-        use get_chunk::data_size_format::si::*;
+        use get_chunk::data_size_format::{si::*, IntoEnumIterator};
+
+        #[test]
+        fn from_to_t_0() {
+            use get_chunk::data_size_format::ies::*;
+
+            for size in SISize::iter() {
+                let si_unit = SIUnit::new(50.0, size);
+                let iec_unit = IECUnit::from(SIUnit::new(50.0, size));
+                assert_eq!(SIUnit::from(iec_unit), si_unit);
+            }
+        }
 
         #[test]
         fn auto_t_0() {
@@ -73,7 +84,6 @@ mod size_format {
 
         mod ops {
             use super::*;
-            use get_chunk::data_size_format::IntoEnumIterator;
 
             #[test]
             fn add_t_0() {
@@ -176,7 +186,18 @@ mod size_format {
     }
 
     mod iec {
-        use get_chunk::data_size_format::ies::*;
+        use get_chunk::data_size_format::{ies::*, IntoEnumIterator};
+
+        #[test]
+        fn from_to_t_0() {
+            use get_chunk::data_size_format::si::*;
+
+            for size in IECSize::iter() {
+                let iec_unit = IECUnit::new(50.0, size);
+                let si_unit = SIUnit::from(IECUnit::new(50.0, size));
+                assert_eq!(IECUnit::from(si_unit), iec_unit);
+            }
+        }
 
         #[test]
         fn auto_t_0() {
@@ -247,7 +268,6 @@ mod size_format {
 
         mod ops {
             use super::*;
-            use get_chunk::data_size_format::IntoEnumIterator;
 
             #[test]
             fn add_t_0() {
