@@ -95,6 +95,33 @@ pub struct FileStream {
 }
 
 impl FileStream {
+    /// Creates a new `FileIter` instance.
+    /// ### Arguments
+    /// * `path` - A path to the file.
+    /// ## Example
+    /// ```
+    /// use get_chunk::data_size_format::iec::IECUnit;
+    /// use get_chunk::stream::{FileStream, StreamExt};
+    ///
+    /// #[tokio::main]
+    /// async fn main() -> std::io::Result<()> {
+    ///     let mut file_stream = FileStream::new("file.txt").await?;
+    ///     while let Ok(chunk) = file_stream.try_next().await {
+    ///         match chunk {
+    ///             Some(data) => {
+    ///                 // some calculations with chunk
+    ///                 // .....
+    ///                 println!("{}", IECUnit::auto(data.len() as f64));
+    ///             }
+    ///             None => {
+    ///                 println!("End of file");
+    ///             }
+    ///         }
+    ///     }
+    ///     Ok(())
+    /// }
+    /// ```
+    ///
     pub async fn new<S: Into<Box<str>>>(path: S) -> io::Result<FileStream> {
         Ok(FileStream {
             memory: Memory::new(),
@@ -103,19 +130,40 @@ impl FileStream {
         })
     }
 
+    /// Checks if the read operation is complete, returning `true` if the data buffer is empty.
+    ///
+    /// ---
+    /// **⚠️ Warning**\
+    /// This method does not guarantee that the entire file has been read. If the contents
+    /// of the file are modified or deleted during iterations, this method may still return `true`.
     pub fn is_read_complete(&self) -> bool {
         self.file.read_complete
     }
 
+    /// Returns the size of the file in bytes.
+    ///
+    /// ---
+    /// Use [`data_size_format`](crate::data_size_format) for comfortable reading and for calculating size
     pub fn get_file_size(&self) -> f64 {
         self.file.metadata.size
     }
 
+    /// Sets the processing mode for determining the chunk size in the file processing module.
+    ///
+    /// ### Arguments
+    /// - `mode`: The processing mode to be set.
     pub fn set_mode(mut self, mode: ChunkSize) -> Self {
         self.file.metadata.chunk_info.mode = mode;
         self
     }
 
+    /// Sets the start position for reading the file in bytes.
+    ///
+    /// ### Arguments
+    /// - `position`: The start position in bytes.
+    ///
+    /// ### Errors
+    /// Returns an `io::Result` indicating success or an `io::Error` if the seek operation fails.
     pub fn set_start_position_bytes(mut self, position: usize) -> io::Result<Self> {
         self.file.metadata.start_position = position.min(self.file.metadata.size as usize);
         self.file.buffer.as_mut().map(|buff| async {
@@ -128,6 +176,13 @@ impl FileStream {
         Ok(self)
     }
 
+    /// Sets the start position for reading the file as a percentage of the total file size.
+    ///
+    /// ### Arguments
+    /// - `position_percent`: The start position as a percentage of the total file size.
+    ///
+    /// ### Errors
+    /// Returns an `io::Result` indicating success or an `io::Error` if the seek operation fails.
     pub fn set_start_position_percent(mut self, position_percent: f64) -> io::Result<Self> {
         self.file.metadata.start_position =
             (self.file.metadata.size * (position_percent / 100.0)).min(100.0) as usize;

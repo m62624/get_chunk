@@ -69,19 +69,22 @@ pub struct FileIter {
 
 impl FileIter {
     /// Creates a new `FileIter` instance.
-    /// # Arguments
+    /// ### Arguments
     /// * `path` - A path to the file.
-    /// # Example
+    /// ## Example
     /// ```
     /// use get_chunk::iterator::FileIter;
+    /// use get_chunk::data_size_format::iec::IECUnit;
     ///
     /// fn main() -> std::io::Result<()> {
     ///
     ///     let file_iter = FileIter::new("file.txt")?;
     ///     for chunk in file_iter {
     ///         match chunk {
-    ///             Ok(chunk) => {
-    ///                 // some calculations with chunk
+    ///             Ok(data) => {
+    ///               // some calculations with chunk
+    ///               //.....
+    ///               println!("{}", IECUnit::auto(data.len() as f64));
     ///             }
     ///             Err(_) => break,
     ///         }
@@ -116,11 +119,22 @@ impl FileIter {
         self.file.metadata.size
     }
 
+    /// Sets the processing mode for determining the chunk size in the file processing module.
+    ///
+    /// ### Arguments
+    /// - `mode`: The processing mode to be set.
     pub fn set_mode(mut self, mode: ChunkSize) -> Self {
         self.file.metadata.chunk_info.mode = mode;
         self
     }
 
+    /// Sets the start position for reading the file in bytes.
+    ///
+    /// ### Arguments
+    /// - `position`: The start position in bytes.
+    ///
+    /// ### Errors
+    /// Returns an `io::Result` indicating success or an `io::Error` if the seek operation fails.
     pub fn set_start_position_bytes(mut self, position: usize) -> io::Result<Self> {
         self.file.metadata.start_position = position.min(self.file.metadata.size as usize);
         self.file.buffer.seek(io::SeekFrom::Start(
@@ -129,6 +143,13 @@ impl FileIter {
         Ok(self)
     }
 
+    /// Sets the start position for reading the file as a percentage of the total file size.
+    ///
+    /// ### Arguments
+    /// - `position_percent`: The start position as a percentage of the total file size.
+    ///
+    /// ### Errors
+    /// Returns an `io::Result` indicating success or an `io::Error` if the seek operation fails.
     pub fn set_start_position_percent(mut self, position_percent: f64) -> io::Result<Self> {
         self.file.metadata.start_position =
             (self.file.metadata.size * (position_percent / 100.0)).min(100.0) as usize;
