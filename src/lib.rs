@@ -22,6 +22,7 @@
 //!   These structures do not track the last successful position.
 //! - **No File Restoration:** Attempting to restore a deleted file during iterations is not supported.
 //!   These structures do not keep track of the file's original state.
+
 mod chunk;
 
 pub use chunk::data_chunk::ChunkSize;

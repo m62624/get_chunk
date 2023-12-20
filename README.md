@@ -1,43 +1,23 @@
-# GET_CHUNK
+# get_chunk
 
 ## About
 
-This utility is used to retrieve the fragment from a file. ( I've created this tool for my personal use, aimed at extracting specific snippets from a generic `CHANGELOG` file :D )
-## Installation
-
-```bash
-cargo install get_chunk
-```
-
-## Example
-
-```bash
-# text from CHANGELOG.md
-# # Changelog
-# ## [2.0.0] - xxxx-xx-xx
-# ### Added
-# - text text text text from version 2.0.0
-# # [1.0.0] - xxxx-xx-xx
-# ### Added
-# - text text text text
-get_chunk --read-from "./CHANGELOG.md" --start-str "## \[\d\.\d\.\d\]" --write-to "temp_changelog.md"
-
-# Output
-# ## [2.0.0] - xxxx-xx-xx
-# ### Added
-# - text text text text from version 2.0.0
-```
-
-```bash
-Retrieve the fragment from the file
-
-Usage: get_chunk [OPTIONS] --read-from <READ_FROM> --start-str <START_STR>
-
-Options:
-  -r, --read-from <READ_FROM>  read from file
-  -s, --start-str <START_STR>  start string (Regular Expression is available)
-  -e, --end-str <END_STR>      end string (Optional, if not specified || no final match is found, the file is read to the end. Regular Expression is available)
-  -w, --write-to <WRITE_TO>    write to file (Optional, if not specified, output to stdout)
-  -h, --help                   Print help (see more with '--help')
-  -V, --version                Print version
+`get_chunk` is a versatile library for creating file iterators or streams (asynchronous iterators),
+specialized in efficient file chunking. It enables users to retrieve chunks of data with each call to `get_chunk`.
+**Key Features:**
+- **File Chunking:** Divide files, including large ones, into seamless chunks with each "Next" iteration.
+- **Automatic Chunking:** Dynamically adjusts chunk sizes for optimal performance, ensuring efficient memory usage.
+  Large chunks are limited to 85% of available free RAM.
+- **Modes:** Choose between automatic tuning or manually set chunk size based on percentage or byte count.
+---
+⚠️ **Important Notice:**
+Iterators created by `get_chunk` don't store the entire file in memory, especially for large datasets.
+Their purpose is to fetch data from files in chunks, maintaining efficiency.
+**Key Points:**
+- **Limited File Retention:** Creating an iterator for a small file might result in fetching all data, OS-dependent.
+  However, this doesn't guarantee file persistence after iterator creation.
+- **Deletion Warning:** Deleting a file during iterator or stream iterations will result in an error.
+  These structures don't track the last successful position.
+- **No File Restoration:** Attempting to restore a deleted file during iterations is not supported.
+  These structures don't keep track of the file's original state.
 ```
