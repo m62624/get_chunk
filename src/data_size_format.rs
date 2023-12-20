@@ -51,6 +51,20 @@ pub mod si {
         Exabyte,
     }
 
+    impl From<SISize> for ies::IECSize {
+        fn from(si_size: SISize) -> Self {
+            match si_size {
+                SISize::Byte => ies::IECSize::Byte,
+                SISize::Kilobyte => ies::IECSize::Kibibyte,
+                SISize::Megabyte => ies::IECSize::Mebibyte,
+                SISize::Gigabyte => ies::IECSize::Gibibyte,
+                SISize::Terabyte => ies::IECSize::Tebibyte,
+                SISize::Petabyte => ies::IECSize::Pebibyte,
+                SISize::Exabyte => ies::IECSize::Exbibyte,
+            }
+        }
+    }
+
     impl SIUnit {
         pub fn new(value: f64, unit_type: SISize) -> SIUnit {
             if value == f64::INFINITY || value == f64::NEG_INFINITY || value > f64::MAX {
@@ -243,6 +257,20 @@ pub mod ies {
         Tebibyte,
         Pebibyte,
         Exbibyte,
+    }
+
+    impl From<IECSize> for si::SISize {
+        fn from(iec_size: IECSize) -> Self {
+            match iec_size {
+                IECSize::Byte => si::SISize::Byte,
+                IECSize::Kibibyte => si::SISize::Kilobyte,
+                IECSize::Mebibyte => si::SISize::Megabyte,
+                IECSize::Gibibyte => si::SISize::Gigabyte,
+                IECSize::Tebibyte => si::SISize::Terabyte,
+                IECSize::Pebibyte => si::SISize::Petabyte,
+                IECSize::Exbibyte => si::SISize::Exabyte,
+            }
+        }
     }
 
     impl IECUnit {
