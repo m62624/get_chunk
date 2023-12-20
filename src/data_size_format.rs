@@ -3,8 +3,8 @@ use std::ops::{Add, Div, Mul, Sub};
 pub use strum::IntoEnumIterator;
 use strum_macros::EnumIter;
 
-/// ## 1000
-/// This module provides functionality for working with data sizes in the SI format.
+/// This module offers functionality for dealing with data sizes in the **SI** format (**1000**)
+///
 /// It includes constants for different size thresholds (e.g., kilobytes, megabytes),
 /// a data structure (`SIUnit`) representing various units of data size, and methods
 /// for convenient conversion and display of data sizes in human-readable formats.
@@ -89,9 +89,7 @@ pub mod si {
                 return SIUnit::default();
             }
             match bytes {
-                b if b.is_infinite() || b > f64::MAX => {
-                    SIUnit::Overflow
-                }
+                b if b.is_infinite() || b > f64::MAX => SIUnit::Overflow,
                 b if b < BYTES_IN_KB => SIUnit::Byte(b, b),
                 b if b < BYTES_IN_MB => SIUnit::Kilobyte(b / BYTES_IN_KB, b),
                 b if b < BYTES_IN_GB => SIUnit::Megabyte(b / BYTES_IN_MB, b),
@@ -212,8 +210,8 @@ pub mod si {
     }
 }
 
-/// ## 1024
-/// This module offers functionality for dealing with data sizes in the IEC format.
+/// This module offers functionality for dealing with data sizes in the **IEC** format (**1024**)
+///
 /// Similar to the SI module, it contains constants for size thresholds and a data structure
 /// (`IECUnit`) representing different units of data size. Additionally, it provides methods
 /// for converting and displaying data sizes in human-readable formats according to the IEC standard.
@@ -298,9 +296,7 @@ pub mod ies {
                 return IECUnit::default();
             }
             match bytes {
-                b if b.is_infinite() || b > f64::MAX => {
-                    IECUnit::Overflow
-                }
+                b if b.is_infinite() || b > f64::MAX => IECUnit::Overflow,
                 b if b < BYTES_IN_KIB => IECUnit::Byte(b, b),
                 b if b < BYTES_IN_MIB => IECUnit::Kibibyte(b / BYTES_IN_KIB, b),
                 b if b < BYTES_IN_GIB => IECUnit::Mebibyte(b / BYTES_IN_MIB, b),
