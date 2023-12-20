@@ -43,7 +43,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Run linter
-      run: cargo clippy -- -D warnings
+      run: cargo clippy --all-features -- -D warnings
 
   tests:
      # if: github.ref == 'refs/heads/main'
