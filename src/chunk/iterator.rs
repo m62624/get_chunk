@@ -37,7 +37,6 @@ impl FilePack {
             .take(self.metadata.chunk_info.prev_bytes_per_second.max(1.0) as u64)
             .read_to_end(&mut buffer)?;
         let timer = timer.elapsed();
-        // stop
         if buffer.is_empty() {
             self.read_complete = true;
         }
@@ -119,10 +118,10 @@ impl FileIter {
         self.file.metadata.size
     }
 
-    /// Sets the processing mode for determining the chunk size in the file processing module.
+    /// Defines the mode of dividing the file into chunks, automatic mode or fixed size
     ///
     /// ### Arguments
-    /// - `mode`: The processing mode to be set.
+    /// - [`mode`](crate::ChunkSize): The processing mode to be set.
     pub fn set_mode(mut self, mode: ChunkSize) -> Self {
         self.file.metadata.chunk_info.mode = mode;
         self
@@ -134,7 +133,7 @@ impl FileIter {
     /// - `position`: The start position in bytes.
     ///
     /// ### Errors
-    /// Returns an `io::Result` indicating success or an `io::Error` if the seek operation fails.
+    /// Returns an [`io::Result`](https://doc.rust-lang.org/std/io/type.Result.html) indicating success or an [`io::Error`](https://doc.rust-lang.org/std/io/struct.Error.html) if the seek operation fails.
     pub fn set_start_position_bytes(mut self, position: usize) -> io::Result<Self> {
         self.file.metadata.start_position = position.min(self.file.metadata.size as usize);
         self.file.buffer.seek(io::SeekFrom::Start(
@@ -149,7 +148,7 @@ impl FileIter {
     /// - `position_percent`: The start position as a percentage of the total file size.
     ///
     /// ### Errors
-    /// Returns an `io::Result` indicating success or an `io::Error` if the seek operation fails.
+    /// Returns an [`io::Result`](https://doc.rust-lang.org/std/io/type.Result.html) indicating success or an [`io::Error`](https://doc.rust-lang.org/std/io/struct.Error.html) if the seek operation fails.
     pub fn set_start_position_percent(mut self, position_percent: f64) -> io::Result<Self> {
         self.file.metadata.start_position =
             (self.file.metadata.size * (position_percent / 100.0)).min(100.0) as usize;
