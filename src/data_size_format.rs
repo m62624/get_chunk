@@ -3,26 +3,6 @@ use std::ops::{Add, Div, Mul, Sub};
 pub use strum::IntoEnumIterator;
 use strum_macros::EnumIter;
 
-impl From<si::SIUnit> for ies::IECUnit {
-    fn from(si_unit: si::SIUnit) -> Self {
-        match si_unit {
-            si::SIUnit::Byte(value_h, value_b) => ies::IECUnit::Byte(value_h, value_b),
-            si::SIUnit::Overflow => ies::IECUnit::Overflow,
-            _ => ies::IECUnit::auto(si_unit.get_values().1),
-        }
-    }
-}
-
-impl From<ies::IECUnit> for si::SIUnit {
-    fn from(iec_unit: ies::IECUnit) -> Self {
-        match iec_unit {
-            ies::IECUnit::Byte(value_h, value_b) => si::SIUnit::Byte(value_h, value_b),
-            ies::IECUnit::Overflow => si::SIUnit::Overflow,
-            _ => si::SIUnit::auto(iec_unit.get_values().1),
-        }
-    }
-}
-
 /// ## 1000
 /// This module provides functionality for working with data sizes in the SI format.
 /// It includes constants for different size thresholds (e.g., kilobytes, megabytes),
@@ -73,6 +53,11 @@ pub mod si {
 
     impl SIUnit {
         pub fn new(value: f64, unit_type: SISize) -> SIUnit {
+            if value == f64::INFINITY || value == f64::NEG_INFINITY || value > f64::MAX {
+                return SIUnit::Overflow;
+            } else if value.is_sign_negative() || value.is_nan() {
+                return SIUnit::default();
+            }
             match unit_type {
                 SISize::Byte => SIUnit::Byte(value, value),
                 SISize::Kilobyte => SIUnit::Kilobyte(value, value * BYTES_IN_KB),
@@ -85,6 +70,9 @@ pub mod si {
         }
 
         pub fn auto(bytes: f64) -> SIUnit {
+            if bytes.is_sign_negative() || bytes.is_nan() {
+                return SIUnit::default();
+            }
             match bytes {
                 b if b == f64::INFINITY || b == f64::NEG_INFINITY || b > f64::MAX => {
                     SIUnit::Overflow
@@ -168,9 +156,27 @@ pub mod si {
         }
     }
 
+    impl From<SIUnit> for ies::IECUnit {
+        fn from(si_unit: si::SIUnit) -> Self {
+            match si_unit {
+                SIUnit::Byte(value_h, value_b) => ies::IECUnit::Byte(value_h, value_b),
+                SIUnit::Overflow => ies::IECUnit::Overflow,
+                _ => ies::IECUnit::auto(si_unit.get_values().1),
+            }
+        }
+    }
+
     impl From<SIUnit> for f64 {
         fn from(data_size_unit: SIUnit) -> Self {
             data_size_unit.get_values().1
+        }
+    }
+
+    /// Converts an `SIUnit` to a `usize` value.
+    impl From<SIUnit> for usize {
+        /// Warning: This conversion may result in data loss.
+        fn from(data_size_unit: SIUnit) -> Self {
+            data_size_unit.get_values().1 as usize
         }
     }
 
@@ -241,6 +247,11 @@ pub mod ies {
 
     impl IECUnit {
         pub fn new(value: f64, unit_type: IECSize) -> IECUnit {
+            if value == f64::INFINITY || value == f64::NEG_INFINITY || value > f64::MAX {
+                return IECUnit::Overflow;
+            } else if value.is_sign_negative() || value.is_nan() {
+                return IECUnit::default();
+            }
             match unit_type {
                 IECSize::Byte => IECUnit::Byte(value, value),
                 IECSize::Kibibyte => IECUnit::Kibibyte(value, value * BYTES_IN_KIB),
@@ -253,6 +264,9 @@ pub mod ies {
         }
 
         pub fn auto(bytes: f64) -> IECUnit {
+            if bytes.is_sign_negative() || bytes.is_nan() {
+                return IECUnit::default();
+            }
             match bytes {
                 b if b == f64::INFINITY || b == f64::NEG_INFINITY || b > f64::MAX => {
                     IECUnit::Overflow
@@ -336,9 +350,27 @@ pub mod ies {
         }
     }
 
+    impl From<ies::IECUnit> for si::SIUnit {
+        fn from(iec_unit: ies::IECUnit) -> Self {
+            match iec_unit {
+                ies::IECUnit::Byte(value_h, value_b) => si::SIUnit::Byte(value_h, value_b),
+                ies::IECUnit::Overflow => si::SIUnit::Overflow,
+                _ => si::SIUnit::auto(iec_unit.get_values().1),
+            }
+        }
+    }
+
     impl From<IECUnit> for f64 {
         fn from(data_size_unit: IECUnit) -> Self {
             data_size_unit.get_values().1
+        }
+    }
+
+    /// Converts an `IECUnit` to a `usize` value.
+    impl From<IECUnit> for usize {
+        /// Warning: This conversion may result in data loss.
+        fn from(data_size_unit: IECUnit) -> Self {
+            data_size_unit.get_values().1 as usize
         }
     }
 
