@@ -117,7 +117,7 @@ impl FileTest {
         file.flush()?;
         Ok(FileTest {
             path: path.to_string(),
-            hash_data: Self::calculate_hash_data(path.as_ref())?,
+            hash_data: Self::calculate_hash_data(path)?,
         })
     }
 }

@@ -68,7 +68,7 @@ pub mod si {
 
     impl SIUnit {
         pub fn new(value: f64, unit_type: SISize) -> SIUnit {
-            if value == f64::INFINITY || value == f64::NEG_INFINITY || value > f64::MAX {
+            if value.is_infinite() || value > f64::MAX {
                 return SIUnit::Overflow;
             } else if value.is_sign_negative() || value.is_nan() {
                 return SIUnit::default();
@@ -89,7 +89,7 @@ pub mod si {
                 return SIUnit::default();
             }
             match bytes {
-                b if b == f64::INFINITY || b == f64::NEG_INFINITY || b > f64::MAX => {
+                b if b.is_infinite() || b > f64::MAX => {
                     SIUnit::Overflow
                 }
                 b if b < BYTES_IN_KB => SIUnit::Byte(b, b),
@@ -277,7 +277,7 @@ pub mod ies {
 
     impl IECUnit {
         pub fn new(value: f64, unit_type: IECSize) -> IECUnit {
-            if value == f64::INFINITY || value == f64::NEG_INFINITY || value > f64::MAX {
+            if value.is_infinite() || value > f64::MAX {
                 return IECUnit::Overflow;
             } else if value.is_sign_negative() || value.is_nan() {
                 return IECUnit::default();
@@ -298,7 +298,7 @@ pub mod ies {
                 return IECUnit::default();
             }
             match bytes {
-                b if b == f64::INFINITY || b == f64::NEG_INFINITY || b > f64::MAX => {
+                b if b.is_infinite() || b > f64::MAX => {
                     IECUnit::Overflow
                 }
                 b if b < BYTES_IN_KIB => IECUnit::Byte(b, b),
