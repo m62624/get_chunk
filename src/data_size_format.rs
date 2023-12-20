@@ -27,6 +27,9 @@ pub mod si {
 
     /// Represents different units of data size, allowing for conversion between human-readable
     /// representations and precise byte values.
+    ///
+    /// This enum supports addition and subtraction operations. However, multiplication and division operations
+    /// are only supported when working with `f64` values.
     #[cfg_attr(feature = "debug", derive(Debug))]
     #[derive(PartialOrd, PartialEq, Clone, Copy, EnumIter)]
     pub enum SIUnit {
@@ -39,6 +42,8 @@ pub mod si {
         Exabyte(f64, f64),
         Overflow,
     }
+
+    /// Enum representing different sizes in the International System of Units (SI).
     #[cfg_attr(feature = "debug", derive(Debug))]
     #[derive(Clone, Copy, EnumIter)]
     pub enum SISize {
@@ -233,6 +238,9 @@ pub mod iec {
 
     /// Represents different units of data size, allowing for conversion between human-readable
     /// representations and precise byte values.
+    ///
+    /// This enum supports addition and subtraction operations. However, multiplication and division operations
+    /// are only supported when working with `f64` values.
     #[cfg_attr(feature = "debug", derive(Debug))]
     #[derive(PartialOrd, PartialEq, Clone, Copy, EnumIter)]
     pub enum IECUnit {
@@ -246,6 +254,7 @@ pub mod iec {
         Overflow,
     }
 
+    /// Enum representing different sizes in the International Electrotechnical Commission (IEC).
     #[cfg_attr(feature = "debug", derive(Debug))]
     #[derive(Clone, Copy, EnumIter)]
     pub enum IECSize {
