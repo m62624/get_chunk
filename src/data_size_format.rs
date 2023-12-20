@@ -51,6 +51,7 @@ pub mod si {
         Exabyte,
     }
 
+    #[cfg(not(tarpaulin_include))]
     impl From<SISize> for ies::IECSize {
         fn from(si_size: SISize) -> Self {
             match si_size {
@@ -259,6 +260,7 @@ pub mod ies {
         Exbibyte,
     }
 
+    #[cfg(not(tarpaulin_include))]
     impl From<IECSize> for si::SISize {
         fn from(iec_size: IECSize) -> Self {
             match iec_size {
