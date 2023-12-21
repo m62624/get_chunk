@@ -7,18 +7,22 @@
 //! **Key Features:**
 //! - **File Chunking:** Seamlessly divide files, including large ones, into chunks with each "Next" iteration.
 //! - **Modes:** Choose between automatic or manual tuning based on percentage or number of bytes.
-//!
 //! - **Automatic chunking:** Each "Next" iteration dynamically determines an optimal chunk size, facilitating efficient handling of even large files.
-//! > ⚠️ The [algorithm](#how-it-works) adjusts chunk sizes for optimal performance after the "Next" call,
+//!
+//! ---
+//! ⚠️ ***Important Notice:***
+//!
+//! The [algorithm](#how-it-works) adjusts chunk sizes for optimal performance after the "Next" call,
 //! taking into account available RAM. However, crucially, this adjustment occurs only after
 //! the current chunk is sent and before the subsequent "Next" call.
+//!
+//! ---
 //! > It's important to note a potential scenario: Suppose a chunk is 15GB, and there's initially 16GB of free RAM.
 //! If, between the current and next "Next" calls, 2GB of RAM becomes unexpectedly occupied,
 //! the current 15GB chunk will still be processed. This situation introduces a risk,
 //! as the system might either reclaim resources (resulting in io::Error) or lead to a code crash.
 //!
 //! ---
-//! ⚠️ ***Important Notice:***
 //!
 //! Iterators created by `get_chunk` do not store the entire file in memory, especially for large datasets.
 //! Their purpose is to fetch data from files, even when dealing with substantial sizes, by reading in chunks.
