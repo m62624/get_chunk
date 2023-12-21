@@ -1,11 +1,23 @@
 [package]
+
 name = "get_chunk"
-version = "1.0.0"
+version = "1.0.1"
 edition = "2021"
 description = "File iterator or stream with auto or manual chunk size selection"
 categories = ["asynchronous", "filesystem", "memory-management"]
 keywords = ["file", "async-io", "chunk"]
 license = "MIT"
+exclude = [
+    ".github",
+    "tests",
+    ".gitignore",
+    ".dockerignore",
+    "Dockerfile",
+    "LICENSE",
+    "README.md",
+    "Cargo.lock",
+]
+
 
 [package.metadata.docs.rs]
 all-features = true
