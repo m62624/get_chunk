@@ -145,4 +145,4 @@ The variables `prev` and `now` represent the previous and current read time, res
 
 ---
 # License
- [MIT License](./LICENSE).
+ [MIT License](https://github.com/m62624/get_chunk/blob/main/README.md).
