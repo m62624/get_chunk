@@ -13,7 +13,6 @@ exclude = [
     ".gitignore",
     ".dockerignore",
     "Dockerfile",
-    "LICENSE",
     "README.md",
     "Cargo.lock",
 ]
