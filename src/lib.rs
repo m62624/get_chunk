@@ -1,3 +1,4 @@
+#![cfg_attr(docsrs, feature(doc_cfg))]
 //! # **About**
 //!
 //! `get_chunk` is a library designed to create file iterators or streams (asynchronous iterators).
@@ -123,6 +124,7 @@ pub use chunk::data_chunk::ChunkSize;
 /// **Note:** These units are intended for convenient size specification and do not store the entire file in memory.
 /// Their purpose is to fetch data from files in human-readable formats during iterations or streams, especially for large datasets.
 #[cfg(feature = "size_format")]
+#[cfg_attr(docsrs, doc(cfg(feature = "size_format")))]
 pub mod data_size_format;
 
 ///  The module is responsible for retrieval of chunks from a file
@@ -139,4 +141,5 @@ pub use chunk::iterator;
 /// ```
 
 #[cfg(feature = "stream")]
+#[cfg_attr(docsrs, doc(cfg(feature = "stream")))]
 pub use chunk::stream;

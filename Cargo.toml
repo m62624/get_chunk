@@ -8,10 +8,8 @@ keywords = ["file", "async-io", "chunk"]
 license = "MIT"
 
 [package.metadata.docs.rs]
-
-# Whether to pass `--all-features` to Cargo (default: false)
 all-features = true
-
+rustdoc-args = ["--cfg", "docsrs"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [dependencies]
@@ -49,5 +47,6 @@ size_format = ["dep:strum", "dep:strum_macros"]
 # Dependencies for unit tests using Tokio macros and a multi-threaded runtime.
 tests = ["tokio/macros", "tokio/rt-multi-thread"]
 
+docs_fix = ["tokio/net"]
 # activates impl debug
 debug = []

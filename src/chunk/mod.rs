@@ -11,12 +11,13 @@ pub mod iterator;
 
 ///
 /// ## Version: Async
-/// 
+///
 /// This module defines the [FileStream](stream::FileStream) struct, which represents an asynchronous file processing unit.
 /// It is designed to work as an iterator, reading chunks of data from a file and providing information
 /// about the read chunks. The asynchronous version is suitable for scenarios where asynchronous
 /// processing is a requirement.
 #[cfg(feature = "stream")]
+#[cfg_attr(docsrs, doc(cfg(feature = "stream")))]
 pub mod stream;
 
 #[cfg_attr(feature = "debug", derive(Debug))]
@@ -46,6 +47,7 @@ impl Memory {
 pub mod data_chunk {
 
     #[cfg_attr(feature = "debug", derive(Debug))]
+
     pub struct Chunk {
         pub value: Vec<u8>,
         pub bytes_per_second: f64,
@@ -72,6 +74,7 @@ pub mod data_chunk {
     }
 
     #[cfg_attr(feature = "debug", derive(Debug))]
+
     pub struct FileInfo {
         pub size: f64,
         pub start_position: usize,
@@ -176,8 +179,5 @@ pub mod data_chunk {
         fn bytes_chunk(file_size: f64, ram_available: f64, bytes: usize) -> f64 {
             (file_size * (bytes.min(file_size as usize) as f64 / 100.0)).min(ram_available * 0.85)
         }
-
-
-        
     }
 }
