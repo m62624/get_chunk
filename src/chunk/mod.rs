@@ -1,4 +1,4 @@
-use sysinfo::{RefreshKind, System, SystemExt};
+use sysinfo::{MemoryRefreshKind, RefreshKind, System};
 
 ///
 /// ## Version: Sync
@@ -34,7 +34,9 @@ impl Memory {
         // only RAM tracking
         Self {
             ram_available: 0.0,
-            system_info: System::new_with_specifics(RefreshKind::new().with_memory()),
+            system_info: System::new_with_specifics(
+                RefreshKind::new().with_memory(MemoryRefreshKind::new().with_ram()),
+            ),
         }
     }
 
