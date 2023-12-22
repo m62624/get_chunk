@@ -1,6 +1,8 @@
 # get_chunk
 
-[![codecov](https://codecov.io/gh/m62624/get_chunk/graph/badge.svg?token=2B7PB64PBO)](https://codecov.io/gh/m62624/get_chunk)
+[![Crates.io](https://img.shields.io/crates/v/get_chunk?style=for-the-badge)](https://crates.io/crates/get_chunk)
+[![docs.rs](https://img.shields.io/docsrs/get_chunk?style=for-the-badge)](https://docs.rs/get_chunk/latest/get_chunk)
+[![Codecov](https://img.shields.io/codecov/c/github/m62624/get_chunk?style=for-the-badge)](https://codecov.io/gh/m62624/get_chunk)
 
 ## About
 
