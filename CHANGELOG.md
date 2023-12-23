@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.1.0] - 2023.12.23
+
+### Fixed
+- Fixed method for setting the start position of `stream` (set_start_position).
+- Added fields to `Cargo.toml` to build documentation with all features
+```
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
+```
+
+### Added
+- Added `include_available_swap` method to include free swap partition/file in the calculation 
+
+### Changed
+- Now when creating iterator/stream, only free RAM is considered by default. 
+
+
 ## [1.0.0] - 2023.12.21
 
 ### Changed
