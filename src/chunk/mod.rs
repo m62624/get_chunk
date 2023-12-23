@@ -27,6 +27,7 @@ pub struct Memory {
     system_info: System,
     /// Information about the free and total space in RAM.
     ram_available: f64,
+    /// A flag that indicates whether to check the swap when calculating the chunk size.
     swap_check: bool,
 }
 
