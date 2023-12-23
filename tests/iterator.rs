@@ -97,6 +97,15 @@ mod size_format {
                 })??)
             );
 
+            let mut file_iter = FileIter::new(file.path.as_str())?
+                .set_start_position_percent(420.0)?
+                .set_mode(ChunkSize::Bytes(1));
+
+            assert!(
+                file_iter.next().is_none(),
+                "Error in set_start_position_t_0"
+            );
+
             Ok(())
         }
 
@@ -115,7 +124,48 @@ mod size_format {
                 })??)
             );
 
+            let mut file_iter = FileIter::new(file.path.as_str())?
+                .set_start_position_bytes(420)?
+                .set_mode(ChunkSize::Bytes(1));
+
+            assert!(
+                file_iter.next().is_none(),
+                "Error in set_start_position_t_1"
+            );
             Ok(())
         }
+    }
+
+    #[test]
+    fn get_file_size_t_0() -> io::Result<()> {
+        let file = FileTest::create_file_with_size(
+            FILE_TEST,
+            IECUnit::new(960.0, IECSize::Kibibyte).into(),
+        )?;
+
+        let file_iter = FileIter::new(file.path.as_str())?;
+        assert_eq!(
+            file_iter.get_file_size(),
+            IECUnit::new(960.0, IECSize::Kibibyte).get_values().1
+        );
+
+        Ok(())
+    }
+
+    #[test]
+    fn is_read_complete_t_0() -> io::Result<()> {
+        let file = FileTest::create_file_with_size(
+            FILE_TEST,
+            IECUnit::new(900.0, IECSize::Kibibyte).into(),
+        )?;
+
+        let mut file_iter = FileIter::new(file.path.as_str())?.set_mode(ChunkSize::Percent(50.0));
+        file_iter.next();
+        assert!(!file_iter.is_read_complete());
+        file_iter.next();
+        assert!(!file_iter.is_read_complete());
+        file_iter.next();
+        assert!(file_iter.is_read_complete());
+        Ok(())
     }
 }
