@@ -9,73 +9,123 @@ mod size_format {
     use get_chunk::ChunkSize;
     use std::io;
 
-    #[tokio::test]
-    pub async fn iter_t_0() -> io::Result<()> {
-        let chunk_size = 150.0;
-        let file_orig = FileTest::create_file_with_size(
-            FILE_TEST,
-            IECUnit::new(960.0, IECSize::Kibibyte).get_values().1,
-        )?;
+    mod set_mode_tests {
+        use super::*;
 
-        let file_stream =
-            FileStream::new(file_orig.path.as_str())
+        /// Bytes
+        #[tokio::test]
+        pub async fn set_mode_t_0() -> io::Result<()> {
+            let chunk_size = 150.0;
+            let file_orig = FileTest::create_file_with_size(
+                FILE_TEST,
+                IECUnit::new(960.0, IECSize::Kibibyte).get_values().1,
+            )?;
+
+            let file_stream =
+                FileStream::new(file_orig.path.as_str())
+                    .await?
+                    .set_mode(ChunkSize::Bytes(
+                        IECUnit::new(chunk_size, IECSize::Kibibyte).into(),
+                    ));
+
+            let mut elements = file_stream.collect::<io::Result<Vec<_>>>().await?;
+            elements.pop();
+
+            for chunk in elements {
+                assert_eq!(
+                    chunk.len(),
+                    IECUnit::new(chunk_size, IECSize::Kibibyte).get_values().1 as usize
+                );
+            }
+            Ok(())
+        }
+
+        /// Percent
+        #[tokio::test]
+        pub async fn set_mode_t_1() -> io::Result<()> {
+            let chunk_size = 144.0;
+            let file_orig = FileTest::create_file_with_size(
+                FILE_TEST,
+                IECUnit::new(960.0, IECSize::Kibibyte).get_values().1,
+            )?;
+
+            let file_stream = FileStream::new(file_orig.path.as_str())
                 .await?
-                .set_mode(ChunkSize::Bytes(
-                    IECUnit::new(chunk_size, IECSize::Kibibyte).into(),
-                ));
+                .set_mode(ChunkSize::Percent(15.0));
 
-        let mut elements = file_stream.collect::<io::Result<Vec<_>>>().await?;
-        elements.pop();
+            let mut elements = file_stream.collect::<io::Result<Vec<_>>>().await?;
+            elements.pop();
 
-        for chunk in elements {
-            assert_eq!(
-                chunk.len(),
-                IECUnit::new(chunk_size, IECSize::Kibibyte).get_values().1 as usize
-            );
+            for chunk in elements {
+                assert_eq!(
+                    chunk.len(),
+                    IECUnit::new(chunk_size, IECSize::Kibibyte).get_values().1 as usize
+                );
+            }
+            Ok(())
         }
-        Ok(())
+
+        /// Auto
+        #[tokio::test]
+        pub async fn set_mode_t_2() -> io::Result<()> {
+            let file_orig = FileTest::create_file_with_size(
+                FILE_TEST,
+                IECUnit::new(700.0, IECSize::Kibibyte).get_values().1,
+            )?;
+
+            let mut file_from_chunks = FileTest::default();
+
+            let mut file_stream = FileStream::new(file_orig.path.as_str()).await?;
+
+            while let Some(chunk) = file_stream.next().await {
+                chunk.map(|data| file_from_chunks.write_bytes_to_file(&data).ok())?;
+            }
+
+            assert_eq!(file_orig, file_from_chunks);
+            Ok(())
+        }
     }
 
-    #[tokio::test]
-    pub async fn iter_t_1() -> io::Result<()> {
-        let chunk_size = 144.0;
-        let file_orig = FileTest::create_file_with_size(
-            FILE_TEST,
-            IECUnit::new(960.0, IECSize::Kibibyte).get_values().1,
-        )?;
+    mod set_start_position_tests {
+        use super::*;
+        const TEST_TEXT: &str = "Hello world :D, I'm a test file!";
 
-        let file_stream = FileStream::new(file_orig.path.as_str())
-            .await?
-            .set_mode(ChunkSize::Percent(15.0));
-
-        let mut elements = file_stream.collect::<io::Result<Vec<_>>>().await?;
-        elements.pop();
-
-        for chunk in elements {
+        /// Percent
+        #[tokio::test]
+        pub async fn set_start_position_t_0() -> io::Result<()> {
+            let file = FileTest::create_with_text(&FILE_TEST, &TEST_TEXT)?;
+            let mut file_iter = FileStream::new(file.path.as_str())
+                .await?
+                .set_start_position_percent(50.0)
+                .await?
+                .set_mode(ChunkSize::Bytes(1));
             assert_eq!(
-                chunk.len(),
-                IECUnit::new(chunk_size, IECSize::Kibibyte).get_values().1 as usize
+                "I",
+                String::from_utf8_lossy(&file_iter.next().await.ok_or_else(|| {
+                    io::Error::new(io::ErrorKind::Other, "Error in set_start_position_t_0")
+                })??)
             );
-        }
-        Ok(())
-    }
-
-    #[tokio::test]
-    pub async fn iter_t_2() -> io::Result<()> {
-        let file_orig = FileTest::create_file_with_size(
-            FILE_TEST,
-            IECUnit::new(700.0, IECSize::Kibibyte).get_values().1,
-        )?;
-
-        let mut file_from_chunks = FileTest::default();
-
-        let mut file_stream = FileStream::new(file_orig.path.as_str()).await?;
-
-        while let Some(chunk) = file_stream.next().await {
-            chunk.map(|data| file_from_chunks.write_bytes_to_file(&data).ok())?;
+            Ok(())
         }
 
-        assert_eq!(file_orig, file_from_chunks);
-        Ok(())
+        /// Bytes
+        #[tokio::test]
+        pub async fn set_start_position_t_1() -> io::Result<()> {
+            let file = FileTest::create_with_text(&FILE_TEST, &TEST_TEXT)?;
+            let mut file_iter = FileStream::new(file.path.as_str())
+                .await?
+                .set_start_position_bytes(6)
+                .await?
+                .set_mode(ChunkSize::Bytes(1));
+
+            assert_eq!(
+                "w",
+                String::from_utf8_lossy(&file_iter.next().await.ok_or_else(|| {
+                    io::Error::new(io::ErrorKind::Other, "Error in set_start_position_t_1")
+                })??)
+            );
+
+            Ok(())
+        }
     }
 }

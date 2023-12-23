@@ -9,64 +9,113 @@ mod size_format {
     use get_chunk::ChunkSize;
     use std::io;
 
-    #[test]
-    pub fn iter_t_0() -> io::Result<()> {
-        let chunk_size = 150.0;
-        let file_orig = FileTest::create_file_with_size(
-            FILE_TEST,
-            IECUnit::new(960.0, IECSize::Kibibyte).get_values().1,
-        )?;
+    mod set_mode_tests {
+        use super::*;
 
-        let file_iter = FileIter::new(file_orig.path.as_str())?.set_mode(ChunkSize::Bytes(
-            IECUnit::new(chunk_size, IECSize::Kibibyte).into(),
-        ));
+        /// Bytes
+        #[test]
+        pub fn set_mode_t_0() -> io::Result<()> {
+            let chunk_size = 150.0;
+            let file_orig = FileTest::create_file_with_size(
+                FILE_TEST,
+                IECUnit::new(960.0, IECSize::Kibibyte).into(),
+            )?;
 
-        let mut elements = file_iter.collect::<io::Result<Vec<_>>>()?;
-        elements.pop();
+            let file_iter = FileIter::new(file_orig.path.as_str())?.set_mode(ChunkSize::Bytes(
+                IECUnit::new(chunk_size, IECSize::Kibibyte).into(),
+            ));
 
-        for chunk in elements {
-            assert_eq!(
-                chunk.len(),
-                IECUnit::new(chunk_size, IECSize::Kibibyte).get_values().1 as usize
-            );
+            let mut elements = file_iter.collect::<io::Result<Vec<_>>>()?;
+            elements.pop();
+
+            for chunk in elements {
+                assert_eq!(
+                    chunk.len(),
+                    IECUnit::new(chunk_size, IECSize::Kibibyte).get_values().1 as usize
+                );
+            }
+            Ok(())
         }
-        Ok(())
+
+        /// Percent
+        #[test]
+        pub fn set_mode_t_1() -> io::Result<()> {
+            let chunk_size = 144.0;
+            let file_orig = FileTest::create_file_with_size(
+                FILE_TEST,
+                IECUnit::new(960.0, IECSize::Kibibyte).into(),
+            )?;
+
+            let file_iter =
+                FileIter::new(file_orig.path.as_str())?.set_mode(ChunkSize::Percent(15.0));
+
+            let mut elements = file_iter.collect::<io::Result<Vec<_>>>()?;
+            elements.pop();
+
+            for chunk in elements {
+                assert_eq!(
+                    chunk.len(),
+                    IECUnit::new(chunk_size, IECSize::Kibibyte).get_values().1 as usize
+                );
+            }
+            Ok(())
+        }
+
+        /// Auto
+        #[test]
+        pub fn set_mode_t_2() -> io::Result<()> {
+            let file_orig = FileTest::create_file_with_size(
+                FILE_TEST,
+                IECUnit::new(700.0, IECSize::Kibibyte).into(),
+            )?;
+
+            let mut file_from_chunks = FileTest::default();
+            for chunk in FileIter::new(file_orig.path.as_str())? {
+                chunk.map(|data| file_from_chunks.write_bytes_to_file(&data).ok())?;
+            }
+            assert_eq!(file_orig, file_from_chunks);
+            Ok(())
+        }
     }
 
-    #[test]
-    pub fn iter_t_1() -> io::Result<()> {
-        let chunk_size = 144.0;
-        let file_orig = FileTest::create_file_with_size(
-            FILE_TEST,
-            IECUnit::new(960.0, IECSize::Kibibyte).get_values().1,
-        )?;
+    mod set_start_position_tests {
+        use super::*;
+        const TEST_TEXT: &str = "Hello world :D, I'm a test file!";
 
-        let file_iter = FileIter::new(file_orig.path.as_str())?.set_mode(ChunkSize::Percent(15.0));
+        /// Percent
+        #[test]
+        pub fn set_start_position_t_0() -> io::Result<()> {
+            let file = FileTest::create_with_text(&FILE_TEST, &TEST_TEXT)?;
+            let mut file_iter = FileIter::new(file.path.as_str())?
+                .set_start_position_percent(50.0)?
+                .set_mode(ChunkSize::Bytes(1));
 
-        let mut elements = file_iter.collect::<io::Result<Vec<_>>>()?;
-        elements.pop();
-
-        for chunk in elements {
             assert_eq!(
-                chunk.len(),
-                IECUnit::new(chunk_size, IECSize::Kibibyte).get_values().1 as usize
+                "I",
+                String::from_utf8_lossy(&file_iter.next().ok_or_else(|| {
+                    io::Error::new(io::ErrorKind::Other, "Error in set_start_position_t_0")
+                })??)
             );
-        }
-        Ok(())
-    }
 
-    #[test]
-    pub fn iter_t_2() -> io::Result<()> {
-        let file_orig = FileTest::create_file_with_size(
-            FILE_TEST,
-            IECUnit::new(700.0, IECSize::Kibibyte).get_values().1,
-        )?;
-
-        let mut file_from_chunks = FileTest::default();
-        for chunk in FileIter::new(file_orig.path.as_str())? {
-            chunk.map(|data| file_from_chunks.write_bytes_to_file(&data).ok())?;
+            Ok(())
         }
-        assert_eq!(file_orig, file_from_chunks);
-        Ok(())
+
+        /// Bytes
+        #[test]
+        pub fn set_start_position_t_1() -> io::Result<()> {
+            let file = FileTest::create_with_text(&FILE_TEST, &TEST_TEXT)?;
+            let mut file_iter = FileIter::new(file.path.as_str())?
+                .set_start_position_bytes(6)?
+                .set_mode(ChunkSize::Bytes(1));
+
+            assert_eq!(
+                "w",
+                String::from_utf8_lossy(&file_iter.next().ok_or_else(|| {
+                    io::Error::new(io::ErrorKind::Other, "Error in set_start_position_t_1")
+                })??)
+            );
+
+            Ok(())
+        }
     }
 }

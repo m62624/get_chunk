@@ -20,6 +20,19 @@ pub struct FileTest {
 }
 
 impl FileTest {
+    pub fn create_with_text<S: AsRef<str>>(path: S, text: S) -> io::Result<Self> {
+        let path = path.as_ref();
+        let mut file = File::create(path)?;
+        file.write_all(text.as_ref().as_bytes())?;
+        file.flush()?;
+        Ok(Self {
+            path: path.to_string(),
+            hash_data: Self::calculate_hash_data(path)?,
+        })
+    }
+
+    
+    #[allow(dead_code)]
     pub fn create_empty_file(path: &str, size_bytes: f64) -> io::Result<()> {
         let mut file = File::create(path)?;
         // Устанавливаем размер файла с помощью seek
