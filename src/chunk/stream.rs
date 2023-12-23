@@ -3,6 +3,7 @@ use std::future::Future;
 use super::data_chunk::{Chunk, ChunkSize, FileInfo};
 use super::Memory;
 
+use sysinfo::{MemoryRefreshKind, RefreshKind, System};
 use tokio::io::AsyncSeekExt;
 use tokio::time::Instant;
 
@@ -197,6 +198,12 @@ impl FileStream {
             Ok::<(), io::Error>(())
         });
         Ok(self)
+    }
+
+    /// Include the available SWAP (available `RAM` + available `SWAP`)
+    pub fn include_available_swap(mut self) -> Self {
+        self.memory.swap_check = true;
+        self
     }
 }
 

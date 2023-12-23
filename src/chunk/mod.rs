@@ -27,6 +27,7 @@ pub struct Memory {
     system_info: System,
     /// Information about the free and total space in RAM.
     ram_available: f64,
+    swap_check: bool,
 }
 
 impl Memory {
@@ -37,12 +38,21 @@ impl Memory {
             system_info: System::new_with_specifics(
                 RefreshKind::new().with_memory(MemoryRefreshKind::new().with_ram()),
             ),
+            swap_check: false,
         }
     }
 
     fn update_ram(&mut self) {
-        self.system_info.refresh_memory();
-        self.ram_available = self.system_info.available_memory() as f64;
+        self.system_info
+            .refresh_memory_specifics(match self.swap_check {
+                true => MemoryRefreshKind::new().with_ram().with_swap(),
+                false => MemoryRefreshKind::new().with_ram().without_swap(),
+            });
+        self.ram_available = if self.swap_check {
+            (self.system_info.available_memory() + self.system_info.free_swap()) as f64
+        } else {
+            self.system_info.available_memory() as f64
+        };
     }
 }
 
