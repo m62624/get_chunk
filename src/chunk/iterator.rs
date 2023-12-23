@@ -1,5 +1,3 @@
-use sysinfo::{MemoryRefreshKind, RefreshKind, System};
-
 use super::data_chunk::{Chunk, ChunkSize, FileInfo};
 use super::Memory;
 

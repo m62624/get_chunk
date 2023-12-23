@@ -3,7 +3,6 @@ use std::future::Future;
 use super::data_chunk::{Chunk, ChunkSize, FileInfo};
 use super::Memory;
 
-use sysinfo::{MemoryRefreshKind, RefreshKind, System};
 use tokio::io::AsyncSeekExt;
 use tokio::time::Instant;
 
@@ -168,16 +167,22 @@ impl FileStream {
     ///
     /// ### Errors
     /// Returns an [`io::Result`](https://doc.rust-lang.org/std/io/type.Result.html) indicating success or an [`io::Error`](https://doc.rust-lang.org/std/io/struct.Error.html) if the seek operation fails.
-    pub fn set_start_position_bytes(mut self, position: usize) -> io::Result<Self> {
+    pub async fn set_start_position_bytes(mut self, position: usize) -> io::Result<Self> {
         self.file.metadata.start_position = position.min(self.file.metadata.size as usize);
-        self.file.buffer.as_mut().map(|buff| async {
-            buff.seek(io::SeekFrom::Start(
-                self.file.metadata.start_position as u64,
-            ))
-            .await?;
-            Ok::<(), io::Error>(())
-        });
-        Ok(self)
+
+        match self.file.buffer.as_mut() {
+            Some(buff) => {
+                buff.seek(io::SeekFrom::Start(
+                    self.file.metadata.start_position as u64,
+                ))
+                .await?;
+                Ok(self)
+            }
+            None => Err(io::Error::new(
+                io::ErrorKind::OutOfMemory,
+                "buffer is empty",
+            )),
+        }
     }
 
     /// Sets the start position for reading the file as a percentage of the total file size.
@@ -187,17 +192,46 @@ impl FileStream {
     ///
     /// ### Errors
     /// Returns an [`io::Result`](https://doc.rust-lang.org/std/io/type.Result.html) indicating success or an [`io::Error`](https://doc.rust-lang.org/std/io/struct.Error.html) if the seek operation fails.
-    pub fn set_start_position_percent(mut self, position_percent: f64) -> io::Result<Self> {
+    pub async fn set_start_position_percent(mut self, position_percent: f64) -> io::Result<Self> {
+        /*
+            self.file.metadata.start_position =
+            (self.file.metadata.size * (position_percent / 100.0)).min(100.0) as usize;
+        self.file.buffer.seek(io::SeekFrom::Start(
+            self.file.metadata.start_position as u64,
+        ))?;
+        self.file.buffer.seek(io::SeekFrom::Start(
+            self.file.metadata.start_position as u64,
+        ))?;
+        Ok(self)
+         */
         self.file.metadata.start_position =
             (self.file.metadata.size * (position_percent / 100.0)).min(100.0) as usize;
-        self.file.buffer.as_mut().map(|buff| async {
-            buff.seek(io::SeekFrom::Start(
-                self.file.metadata.start_position as u64,
-            ))
-            .await?;
-            Ok::<(), io::Error>(())
-        });
-        Ok(self)
+        match self.file.buffer.as_mut() {
+            Some(buff) => {
+                buff.seek(io::SeekFrom::Start(
+                    self.file.metadata.start_position as u64,
+                ))
+                .await?;
+                Ok(self)
+            }
+            None => Err(io::Error::new(
+                io::ErrorKind::OutOfMemory,
+                "buffer is empty",
+            )),
+        }
+
+        // self.file.buffer.as_mut().map(|buff| async {
+        //     buff.seek(io::SeekFrom::Start(
+        //         self.file.metadata.start_position as u64,
+        //     ))
+        //     .await?;
+
+        //     println!(
+        //         "current seek: {}",
+        //         buff.seek(io::SeekFrom::Current(0)).await?
+        //     );
+        //     Ok::<(), io::Error>(())
+        // });
     }
 
     /// Include the available SWAP (available `RAM` + available `SWAP`)
