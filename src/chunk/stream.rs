@@ -193,17 +193,6 @@ impl FileStream {
     /// ### Errors
     /// Returns an [`io::Result`](https://doc.rust-lang.org/std/io/type.Result.html) indicating success or an [`io::Error`](https://doc.rust-lang.org/std/io/struct.Error.html) if the seek operation fails.
     pub async fn set_start_position_percent(mut self, position_percent: f64) -> io::Result<Self> {
-        /*
-            self.file.metadata.start_position =
-            (self.file.metadata.size * (position_percent / 100.0)).min(100.0) as usize;
-        self.file.buffer.seek(io::SeekFrom::Start(
-            self.file.metadata.start_position as u64,
-        ))?;
-        self.file.buffer.seek(io::SeekFrom::Start(
-            self.file.metadata.start_position as u64,
-        ))?;
-        Ok(self)
-         */
         self.file.metadata.start_position =
             (self.file.metadata.size * (position_percent / 100.0)).min(100.0) as usize;
         match self.file.buffer.as_mut() {
@@ -219,19 +208,6 @@ impl FileStream {
                 "buffer is empty",
             )),
         }
-
-        // self.file.buffer.as_mut().map(|buff| async {
-        //     buff.seek(io::SeekFrom::Start(
-        //         self.file.metadata.start_position as u64,
-        //     ))
-        //     .await?;
-
-        //     println!(
-        //         "current seek: {}",
-        //         buff.seek(io::SeekFrom::Current(0)).await?
-        //     );
-        //     Ok::<(), io::Error>(())
-        // });
     }
 
     /// Include the available SWAP (available `RAM` + available `SWAP`)
