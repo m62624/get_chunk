@@ -3,28 +3,43 @@ use std::future::Future;
 use super::data_chunk::{Chunk, ChunkSize, FileInfo};
 use super::Memory;
 
-use tokio::io::AsyncSeekExt;
+use std::io::Cursor;
 use tokio::time::Instant;
 
 use tokio::task::{self, JoinHandle};
 use tokio::{
     fs::File,
-    io::{self, AsyncReadExt, BufReader},
+    io::{self, AsyncRead, AsyncReadExt, AsyncSeek, AsyncSeekExt, BufReader},
 };
 
 use tokio_stream::Stream;
 pub use tokio_stream::StreamExt;
 
 #[cfg_attr(feature = "debug", derive(Debug))]
-#[derive(Default)]
-struct FilePack {
+struct FilePack<R>
+where
+    R: AsyncRead + Unpin + Send,
+{
     metadata: FileInfo,
-    buffer: Option<BufReader<File>>,
+    buffer: Option<BufReader<R>>,
     read_complete: bool,
 }
 
-impl FilePack {
-    async fn new(buffer: BufReader<File>, start_position: usize) -> io::Result<FilePack> {
+impl<R> Default for FilePack<R>
+where
+    R: AsyncRead + Unpin + Send,
+{
+    fn default() -> Self {
+        FilePack {
+            metadata: FileInfo::default(),
+            buffer: None,
+            read_complete: false,
+        }
+    }
+}
+
+impl FilePack<File> {
+    async fn new(buffer: BufReader<File>, start_position: usize) -> io::Result<FilePack<File>> {
         Ok(FilePack {
             metadata: FileInfo::new(
                 buffer.get_ref().metadata().await?.len() as f64,
@@ -38,7 +53,26 @@ impl FilePack {
     async fn create_buffer(path: &str) -> io::Result<BufReader<File>> {
         Ok(BufReader::new(File::open(path).await?))
     }
+}
 
+impl FilePack<Cursor<Vec<u8>>> {
+    async fn new(
+        buffer: BufReader<Cursor<Vec<u8>>>,
+        start_position: usize,
+    ) -> io::Result<FilePack<Cursor<Vec<u8>>>> {
+        Ok(FilePack {
+            metadata: FileInfo::new(buffer.get_ref().get_ref().len() as f64, start_position),
+            buffer: Some(buffer),
+            read_complete: false,
+        })
+    }
+
+    async fn create_buffer(bytes: Vec<u8>) -> io::Result<BufReader<Cursor<Vec<u8>>>> {
+        Ok(BufReader::new(Cursor::new(bytes)))
+    }
+}
+
+impl<R: AsyncRead + Unpin + Send> FilePack<R> {
     async fn read_chunk(mut self) -> io::Result<(Chunk, Self)> {
         let mut buffer = Vec::new();
         match self.buffer.as_mut() {
@@ -77,8 +111,6 @@ impl FilePack {
     }
 }
 
-type Task = Option<JoinHandle<io::Result<(Chunk, FilePack)>>>;
-
 /// The `FileStream` provides an asynchronous file stream designed to read data chunks from a file.
 ///
 /// It operates in two modes:
@@ -88,13 +120,17 @@ type Task = Option<JoinHandle<io::Result<(Chunk, FilePack)>>>;
 /// 2. **[`Fixed Size Mode`](super::data_chunk::ChunkSize):** Allows users to manually set the chunk size, with any remaining data carried over
 ///    to the next iteration as a single chunk.
 #[cfg_attr(feature = "debug", derive(Debug))]
-pub struct FileStream {
+pub struct FileStream<R>
+where
+    R: AsyncRead + Unpin + Send,
+{
     memory: Memory,
-    file: FilePack,
-    current_task: Task,
+    file: FilePack<R>,
+    current_task: Option<JoinHandle<io::Result<(Chunk, FilePack<R>)>>>,
+    // current_task: Option<JoinHandle<io::Result<(Chunk, FilePack<R>>>)>,
 }
 
-impl FileStream {
+impl FileStream<File> {
     /// Creates a new `FileIter` instance. The default setting is automatic detection of the chunk size
     /// ### Arguments
     /// * `path` - A path to the file.
@@ -125,14 +161,31 @@ impl FileStream {
     /// }
     /// ```
     ///
-    pub async fn new<S: Into<Box<str>>>(path: S) -> io::Result<FileStream> {
+    pub async fn new<S: Into<Box<str>>>(path: S) -> io::Result<FileStream<File>> {
         Ok(FileStream {
             memory: Memory::new(),
-            file: FilePack::new(FilePack::create_buffer(&path.into()).await?, 0).await?,
+            file: FilePack::<File>::new(FilePack::<File>::create_buffer(&path.into()).await?, 0)
+                .await?,
             current_task: None,
         })
     }
+}
 
+impl FileStream<Cursor<Vec<u8>>> {
+    pub async fn from_bytes(bytes: Vec<u8>) -> io::Result<FileStream<Cursor<Vec<u8>>>> {
+        Ok(FileStream {
+            memory: Memory::new(),
+            file: FilePack::<Cursor<Vec<u8>>>::new(
+                FilePack::<Cursor<Vec<u8>>>::create_buffer(bytes).await?,
+                0,
+            )
+            .await?,
+            current_task: None,
+        })
+    }
+}
+
+impl<R: AsyncRead + AsyncSeek + Unpin + Send> FileStream<R> {
     /// Checks if the read operation is complete, returning `true` if the data buffer is empty.
     ///
     /// ---
@@ -217,7 +270,7 @@ impl FileStream {
     }
 }
 
-impl Stream for FileStream {
+impl<R: AsyncRead + AsyncSeek + Unpin + Send + 'static> Stream for FileStream<R> {
     type Item = io::Result<Vec<u8>>;
 
     fn poll_next(
@@ -237,6 +290,7 @@ impl Stream for FileStream {
             this.file.metadata.chunk_info.mode,
         );
         if this.current_task.is_none() {
+            // let file = Option::take(this.file);
             this.current_task = Some(task::spawn(std::mem::take(&mut this.file).read_chunk()));
         }
         match this.current_task.as_mut() {
