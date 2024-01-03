@@ -340,6 +340,23 @@ mod impl_try_from {
     use super::*;
     use async_trait::async_trait;
 
+    /// ### Custom TryFrom Trait for Async Operations
+    ///
+    /// ---
+    /// **Just use `try_from_data` instead of `try_from`.**
+    /// 
+    /// ---
+    /// In Rust, the standard `TryFrom` trait is not compatible with asynchronous operations. To handle
+    /// async conversions, a custom `TryFrom` trait is defined using the `async_trait` macro from the
+    /// `async-trait` crate. 
+    /// 
+    /// Support formats:
+    /// - `File`
+    /// - `BufReader<File>`
+    /// - `Vec<u8>`
+    /// - `Cursor<Vec<u8>>`
+    /// - `BufReader<Cursor<Vec<u8>>>`
+    /// - `String`
     #[async_trait]
     pub trait TryFrom<T>: Sized {
         /// The type returned in the event of a conversion error.
