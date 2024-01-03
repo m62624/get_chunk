@@ -123,18 +123,6 @@ impl FileIter<File> {
     }
 }
 
-impl FileIter<io::Cursor<Vec<u8>>> {
-    pub fn from_bytes(bytes: Vec<u8>) -> io::Result<FileIter<io::Cursor<Vec<u8>>>> {
-        Ok(FileIter {
-            memory: Memory::new(),
-            file: FilePack::<io::Cursor<Vec<u8>>>::new(
-                FilePack::<io::Cursor<Vec<u8>>>::create_buffer(bytes)?,
-                0,
-            )?,
-        })
-    }
-}
-
 impl<R: Seek + Read> FileIter<R> {
     /// Checks if the read operation is complete, returning `true` if the data buffer is empty.
     ///
@@ -225,6 +213,122 @@ impl<R: Seek + Read> Iterator for FileIter<R> {
                 }
             }
             Err(e) => Some(Err(e)),
+        }
+    }
+}
+
+mod impl_try_from {
+    use std::borrow::Cow;
+
+    use super::*;
+
+    impl TryFrom<File> for FileIter<File> {
+        type Error = io::Error;
+
+        fn try_from(file: File) -> Result<Self, Self::Error> {
+            Ok(FileIter {
+                memory: Memory::new(),
+                file: FilePack::<File>::new(BufReader::new(file), 0)?,
+            })
+        }
+    }
+
+    impl TryFrom<BufReader<File>> for FileIter<File> {
+        type Error = io::Error;
+
+        fn try_from(buffer: BufReader<File>) -> Result<Self, Self::Error> {
+            Ok(FileIter {
+                memory: Memory::new(),
+                file: FilePack::<File>::new(buffer, 0)?,
+            })
+        }
+    }
+
+    impl TryFrom<Vec<u8>> for FileIter<io::Cursor<Vec<u8>>> {
+        type Error = io::Error;
+
+        fn try_from(bytes: Vec<u8>) -> Result<Self, Self::Error> {
+            Ok(FileIter {
+                memory: Memory::new(),
+                file: FilePack::<io::Cursor<Vec<u8>>>::new(
+                    FilePack::<io::Cursor<Vec<u8>>>::create_buffer(bytes)?,
+                    0,
+                )?,
+            })
+        }
+    }
+
+    impl TryFrom<&Vec<u8>> for FileIter<io::Cursor<Vec<u8>>> {
+        type Error = io::Error;
+
+        fn try_from(bytes: &Vec<u8>) -> Result<Self, Self::Error> {
+            Ok(FileIter {
+                memory: Memory::new(),
+                file: FilePack::<io::Cursor<Vec<u8>>>::new(
+                    FilePack::<io::Cursor<Vec<u8>>>::create_buffer(bytes.clone())?,
+                    0,
+                )?,
+            })
+        }
+    }
+
+    impl TryFrom<io::Cursor<Vec<u8>>> for FileIter<io::Cursor<Vec<u8>>> {
+        type Error = io::Error;
+
+        fn try_from(buffer: io::Cursor<Vec<u8>>) -> Result<Self, Self::Error> {
+            Ok(FileIter {
+                memory: Memory::new(),
+                file: FilePack::<io::Cursor<Vec<u8>>>::new(BufReader::new(buffer), 0)?,
+            })
+        }
+    }
+
+    impl TryFrom<BufReader<io::Cursor<Vec<u8>>>> for FileIter<io::Cursor<Vec<u8>>> {
+        type Error = io::Error;
+
+        fn try_from(buffer: BufReader<io::Cursor<Vec<u8>>>) -> Result<Self, Self::Error> {
+            Ok(FileIter {
+                memory: Memory::new(),
+                file: FilePack::<io::Cursor<Vec<u8>>>::new(buffer, 0)?,
+            })
+        }
+    }
+
+    impl TryFrom<&[u8]> for FileIter<io::Cursor<Vec<u8>>> {
+        type Error = io::Error;
+
+        fn try_from(bytes: &[u8]) -> Result<Self, Self::Error> {
+            Ok(FileIter {
+                memory: Memory::new(),
+                file: FilePack::<io::Cursor<Vec<u8>>>::new(
+                    FilePack::<io::Cursor<Vec<u8>>>::create_buffer(bytes.to_vec())?,
+                    0,
+                )?,
+            })
+        }
+    }
+
+    impl TryFrom<&str> for FileIter<File> {
+        type Error = io::Error;
+
+        fn try_from(path: &str) -> Result<Self, Self::Error> {
+            FileIter::new(path)
+        }
+    }
+
+    impl TryFrom<String> for FileIter<File> {
+        type Error = io::Error;
+
+        fn try_from(path: String) -> Result<Self, Self::Error> {
+            FileIter::new(path)
+        }
+    }
+
+    impl TryFrom<Cow<'_, str>> for FileIter<File> {
+        type Error = io::Error;
+
+        fn try_from(path: Cow<'_, str>) -> Result<Self, Self::Error> {
+            FileIter::new(path)
         }
     }
 }
