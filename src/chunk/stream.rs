@@ -111,6 +111,9 @@ impl<R: AsyncRead + Unpin + Send> FilePack<R> {
     }
 }
 
+type ChunkResult<R> = io::Result<(Chunk, FilePack<R>)>;
+type Task<R> = JoinHandle<ChunkResult<R>>;
+
 /// The `FileStream` provides an asynchronous file stream designed to read data chunks from a file.
 ///
 /// It operates in two modes:
@@ -126,8 +129,7 @@ where
 {
     memory: Memory,
     file: FilePack<R>,
-    current_task: Option<JoinHandle<io::Result<(Chunk, FilePack<R>)>>>,
-    // current_task: Option<JoinHandle<io::Result<(Chunk, FilePack<R>>>)>,
+    current_task: Option<Task<R>>,
 }
 
 impl FileStream<File> {
