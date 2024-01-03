@@ -4,3 +4,4 @@
 /.coverage
 /.polygon
 /.vscode
+/build_rs_cov.profraw
