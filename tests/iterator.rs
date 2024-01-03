@@ -168,4 +168,139 @@ mod size_format {
         assert!(file_iter.is_read_complete());
         Ok(())
     }
+
+    mod impl_try_from {
+        use std::{fs::File, io::BufReader};
+
+        use super::*;
+
+        ///  impl TryFrom<File> for FileIter<File>
+        #[test]
+        fn impl_try_from_t_0() -> io::Result<()> {
+            let chunk_size = 150.0;
+            let file_orig = FileTest::create_file_with_size(
+                FILE_TEST,
+                IECUnit::new(960.0, IECSize::Kibibyte).into(),
+            )?;
+            let file_orig = File::open(file_orig.path.as_str())?;
+            let file_iter = FileIter::try_from(file_orig)?.set_mode(ChunkSize::Bytes(
+                IECUnit::new(chunk_size, IECSize::Kibibyte).into(),
+            ));
+            let mut elements = file_iter.collect::<io::Result<Vec<_>>>()?;
+            elements.pop();
+
+            for chunk in elements {
+                assert_eq!(
+                    chunk.len(),
+                    IECUnit::new(chunk_size, IECSize::Kibibyte).get_values().1 as usize
+                );
+            }
+            Ok(())
+        }
+
+        ///  impl TryFrom<BufReader<File>> for FileIter<File>
+        #[test]
+        fn impl_try_from_t_1() -> io::Result<()> {
+            let chunk_size = 150.0;
+            let file_orig = FileTest::create_file_with_size(
+                FILE_TEST,
+                IECUnit::new(960.0, IECSize::Kibibyte).into(),
+            )?;
+            let file_orig = BufReader::new(File::open(file_orig.path.as_str())?);
+            let file_iter = FileIter::try_from(file_orig)?.set_mode(ChunkSize::Bytes(
+                IECUnit::new(chunk_size, IECSize::Kibibyte).into(),
+            ));
+            let mut elements = file_iter.collect::<io::Result<Vec<_>>>()?;
+            elements.pop();
+
+            for chunk in elements {
+                assert_eq!(
+                    chunk.len(),
+                    IECUnit::new(chunk_size, IECSize::Kibibyte).get_values().1 as usize
+                );
+            }
+            Ok(())
+        }
+
+        /// impl TryFrom<Vec<u8>> for FileIter<io::Cursor<Vec<u8>>>
+        #[test]
+        fn impl_try_from_t_2() -> io::Result<()> {
+            let bytes: [u8; 13] = [72, 101, 108, 108, 111, 44, 32, 119, 111, 114, 108, 100, 33];
+            let mut file_iter =
+                FileIter::try_from(bytes.as_slice())?.set_mode(ChunkSize::Percent(50.0));
+            assert_eq!(file_iter.next().unwrap()?, [72, 101, 108, 108, 111, 44]);
+            assert_eq!(file_iter.next().unwrap()?, [32, 119, 111, 114, 108, 100]);
+            assert_eq!(file_iter.next().unwrap()?, [33]);
+
+            Ok(())
+        }
+
+        ///  impl TryFrom<Vec<u8>> for FileIter<io::Cursor<Vec<u8>>>
+        #[test]
+        fn impl_try_from_t_3() -> io::Result<()> {
+            let bytes: Vec<u8> =
+                [72, 101, 108, 108, 111, 44, 32, 119, 111, 114, 108, 100, 33].to_vec();
+            let mut file_iter = FileIter::try_from(bytes)?.set_mode(ChunkSize::Percent(50.0));
+            assert_eq!(file_iter.next().unwrap()?, [72, 101, 108, 108, 111, 44]);
+            assert_eq!(file_iter.next().unwrap()?, [32, 119, 111, 114, 108, 100]);
+            assert_eq!(file_iter.next().unwrap()?, [33]);
+
+            Ok(())
+        }
+
+        ///  impl TryFrom<&Vec<u8>> for FileIter<io::Cursor<Vec<u8>>>
+        #[test]
+        fn impl_try_from_t_4() -> io::Result<()> {
+            let bytes: Vec<u8> =
+                [72, 101, 108, 108, 111, 44, 32, 119, 111, 114, 108, 100, 33].to_vec();
+            let mut file_iter = FileIter::try_from(&bytes)?.set_mode(ChunkSize::Percent(50.0));
+            assert_eq!(file_iter.next().unwrap()?, [72, 101, 108, 108, 111, 44]);
+            assert_eq!(file_iter.next().unwrap()?, [32, 119, 111, 114, 108, 100]);
+            assert_eq!(file_iter.next().unwrap()?, [33]);
+
+            Ok(())
+        }
+
+        ///   impl TryFrom<io::Cursor<Vec<u8>>> for FileIter<io::Cursor<Vec<u8>>>
+        #[test]
+        fn impl_try_from_t_5() -> io::Result<()> {
+            let bytes: io::Cursor<Vec<u8>> = io::Cursor::new(
+                [72, 101, 108, 108, 111, 44, 32, 119, 111, 114, 108, 100, 33].to_vec(),
+            );
+            let mut file_iter = FileIter::try_from(bytes)?.set_mode(ChunkSize::Percent(50.0));
+            assert_eq!(file_iter.next().unwrap()?, [72, 101, 108, 108, 111, 44]);
+            assert_eq!(file_iter.next().unwrap()?, [32, 119, 111, 114, 108, 100]);
+            assert_eq!(file_iter.next().unwrap()?, [33]);
+
+            Ok(())
+        }
+
+        ///  impl TryFrom<BufReader<io::Cursor<Vec<u8>>>> for FileIter<io::Cursor<Vec<u8>>>
+        #[test]
+        fn impl_try_from_t_6() -> io::Result<()> {
+            let bytes: io::Cursor<Vec<u8>> = io::Cursor::new(
+                [72, 101, 108, 108, 111, 44, 32, 119, 111, 114, 108, 100, 33].to_vec(),
+            );
+            let bytes = BufReader::new(bytes);
+            let mut file_iter = FileIter::try_from(bytes)?.set_mode(ChunkSize::Percent(50.0));
+            assert_eq!(file_iter.next().unwrap()?, [72, 101, 108, 108, 111, 44]);
+            assert_eq!(file_iter.next().unwrap()?, [32, 119, 111, 114, 108, 100]);
+            assert_eq!(file_iter.next().unwrap()?, [33]);
+
+            Ok(())
+        }
+
+        /// impl TryFrom<&[u8]> for FileIter<io::Cursor<Vec<u8>>>
+        #[test]
+        fn impl_try_from_t_7() -> io::Result<()> {
+            let bytes: [u8; 13] = [72, 101, 108, 108, 111, 44, 32, 119, 111, 114, 108, 100, 33];
+            let mut file_iter =
+                FileIter::try_from(bytes.as_slice())?.set_mode(ChunkSize::Percent(50.0));
+            assert_eq!(file_iter.next().unwrap()?, [72, 101, 108, 108, 111, 44]);
+            assert_eq!(file_iter.next().unwrap()?, [32, 119, 111, 114, 108, 100]);
+            assert_eq!(file_iter.next().unwrap()?, [33]);
+
+            Ok(())
+        }
+    }
 }
