@@ -10,14 +10,17 @@ use std::{
 };
 
 #[cfg_attr(feature = "debug", derive(Debug))]
-struct FilePack {
+struct FilePack<R>
+where
+    R: Read + Seek,
+{
     metadata: FileInfo,
-    buffer: BufReader<File>,
+    buffer: BufReader<R>,
     read_complete: bool,
 }
 
-impl FilePack {
-    fn new(buffer: BufReader<File>, start_position: usize) -> io::Result<FilePack> {
+impl FilePack<File> {
+    fn new(buffer: BufReader<File>, start_position: usize) -> io::Result<FilePack<File>> {
         Ok(FilePack {
             metadata: FileInfo::new(buffer.get_ref().metadata()?.len() as f64, start_position),
             buffer,
@@ -28,7 +31,26 @@ impl FilePack {
     fn create_buffer(path: &str) -> io::Result<BufReader<File>> {
         Ok(BufReader::new(File::open(path)?))
     }
+}
 
+impl FilePack<io::Cursor<Vec<u8>>> {
+    fn new(
+        buffer: BufReader<io::Cursor<Vec<u8>>>,
+        start_position: usize,
+    ) -> io::Result<FilePack<io::Cursor<Vec<u8>>>> {
+        Ok(FilePack {
+            metadata: FileInfo::new(buffer.get_ref().get_ref().len() as f64, start_position),
+            buffer,
+            read_complete: false,
+        })
+    }
+
+    pub fn create_buffer(bytes: Vec<u8>) -> io::Result<BufReader<io::Cursor<Vec<u8>>>> {
+        Ok(BufReader::new(io::Cursor::new(bytes)))
+    }
+}
+
+impl<R: Read + Seek> FilePack<R> {
     fn read_chunk(&mut self) -> io::Result<Chunk> {
         let mut buffer = Vec::new();
         let timer = Instant::now();
@@ -61,12 +83,12 @@ impl FilePack {
 ///    to the next iteration as a single chunk.
 
 #[cfg_attr(feature = "debug", derive(Debug))]
-pub struct FileIter {
+pub struct FileIter<R: Seek + Read> {
     memory: Memory,
-    file: FilePack,
+    file: FilePack<R>,
 }
 
-impl FileIter {
+impl FileIter<File> {
     /// Creates a new `FileIter` instance. The default setting is automatic detection of the chunk size
     /// ### Arguments
     /// * `path` - A path to the file.
@@ -93,13 +115,27 @@ impl FileIter {
     /// }
     /// ```
     ///
-    pub fn new<S: Into<Box<str>>>(path: S) -> io::Result<FileIter> {
+    pub fn new<S: Into<Box<str>>>(path: S) -> io::Result<FileIter<File>> {
         Ok(FileIter {
             memory: Memory::new(),
-            file: FilePack::new(FilePack::create_buffer(&path.into())?, 0)?,
+            file: FilePack::<File>::new(FilePack::<File>::create_buffer(&path.into())?, 0)?,
         })
     }
+}
 
+impl FileIter<io::Cursor<Vec<u8>>> {
+    pub fn from_bytes(bytes: Vec<u8>) -> io::Result<FileIter<io::Cursor<Vec<u8>>>> {
+        Ok(FileIter {
+            memory: Memory::new(),
+            file: FilePack::<io::Cursor<Vec<u8>>>::new(
+                FilePack::<io::Cursor<Vec<u8>>>::create_buffer(bytes)?,
+                0,
+            )?,
+        })
+    }
+}
+
+impl<R: Seek + Read> FileIter<R> {
     /// Checks if the read operation is complete, returning `true` if the data buffer is empty.
     ///
     /// ---
@@ -165,7 +201,7 @@ impl FileIter {
     }
 }
 
-impl Iterator for FileIter {
+impl<R: Seek + Read> Iterator for FileIter<R> {
     type Item = io::Result<Vec<u8>>;
 
     fn next(&mut self) -> Option<Self::Item> {
