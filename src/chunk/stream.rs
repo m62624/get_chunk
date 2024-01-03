@@ -1,6 +1,5 @@
 use super::data_chunk::{Chunk, ChunkSize, FileInfo};
 use super::Memory;
-use async_convert::{async_trait, TryFrom};
 use std::future::Future;
 
 use std::io::Cursor;
@@ -12,9 +11,9 @@ use tokio::{
     io::{self, AsyncRead, AsyncReadExt, AsyncSeek, AsyncSeekExt, BufReader},
 };
 
+pub use impl_try_from::TryFrom;
 use tokio_stream::Stream;
 pub use tokio_stream::StreamExt;
-
 #[cfg_attr(feature = "debug", derive(Debug))]
 struct FilePack<R>
 where
@@ -336,14 +335,25 @@ impl<R: AsyncRead + AsyncSeek + Unpin + Send + 'static> Stream for FileStream<R>
     }
 }
 
+/// Added implementations of conversions from other types
 mod impl_try_from {
     use super::*;
+    use async_trait::async_trait;
+
+    #[async_trait]
+    pub trait TryFrom<T>: Sized {
+        /// The type returned in the event of a conversion error.
+        type Error;
+
+        /// Performs the conversion.
+        async fn try_from_data(value: T) -> Result<Self, Self::Error>;
+    }
 
     #[async_trait]
     impl TryFrom<File> for FileStream<File> {
         type Error = io::Error;
 
-        async fn try_from(file: File) -> Result<Self, Self::Error> {
+        async fn try_from_data(file: File) -> Result<Self, Self::Error> {
             Ok(FileStream {
                 memory: Memory::new(),
                 file: FilePack::<File>::new(BufReader::new(file), 0).await?,
@@ -356,7 +366,7 @@ mod impl_try_from {
     impl TryFrom<BufReader<File>> for FileStream<File> {
         type Error = io::Error;
 
-        async fn try_from(buffer: BufReader<File>) -> Result<Self, Self::Error> {
+        async fn try_from_data(buffer: BufReader<File>) -> Result<Self, Self::Error> {
             Ok(FileStream {
                 memory: Memory::new(),
                 file: FilePack::<File>::new(buffer, 0).await?,
@@ -369,7 +379,7 @@ mod impl_try_from {
     impl TryFrom<Vec<u8>> for FileStream<Cursor<Vec<u8>>> {
         type Error = io::Error;
 
-        async fn try_from(bytes: Vec<u8>) -> Result<Self, Self::Error> {
+        async fn try_from_data(bytes: Vec<u8>) -> Result<Self, Self::Error> {
             Ok(FileStream {
                 memory: Memory::new(),
                 file: FilePack::<Cursor<Vec<u8>>>::new(
@@ -386,7 +396,7 @@ mod impl_try_from {
     impl TryFrom<Cursor<Vec<u8>>> for FileStream<Cursor<Vec<u8>>> {
         type Error = io::Error;
 
-        async fn try_from(buffer: Cursor<Vec<u8>>) -> Result<Self, Self::Error> {
+        async fn try_from_data(buffer: Cursor<Vec<u8>>) -> Result<Self, Self::Error> {
             Ok(FileStream {
                 memory: Memory::new(),
                 file: FilePack::<Cursor<Vec<u8>>>::new(BufReader::new(buffer), 0).await?,
@@ -399,7 +409,7 @@ mod impl_try_from {
     impl TryFrom<BufReader<Cursor<Vec<u8>>>> for FileStream<Cursor<Vec<u8>>> {
         type Error = io::Error;
 
-        async fn try_from(buffer: BufReader<Cursor<Vec<u8>>>) -> Result<Self, Self::Error> {
+        async fn try_from_data(buffer: BufReader<Cursor<Vec<u8>>>) -> Result<Self, Self::Error> {
             Ok(FileStream {
                 memory: Memory::new(),
                 file: FilePack::<Cursor<Vec<u8>>>::new(buffer, 0).await?,
@@ -408,11 +418,12 @@ mod impl_try_from {
         }
     }
 
+    #[cfg(not(tarpaulin_include))]
     #[async_trait]
     impl TryFrom<String> for FileStream<File> {
         type Error = io::Error;
 
-        async fn try_from(path: String) -> Result<Self, Self::Error> {
+        async fn try_from_data(path: String) -> Result<Self, Self::Error> {
             FileStream::new(path).await
         }
     }
