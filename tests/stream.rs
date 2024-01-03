@@ -192,7 +192,7 @@ mod size_format {
         use tokio::fs::File;
         /// impl TryFrom<File> for FileStream<File>
         #[tokio::test]
-        async fn try_from_t_0() -> io::Result<()> {
+        async fn impl_try_from_t_0() -> io::Result<()> {
             let chunk_size = 150.0;
             let file_orig = FileTest::create_file_with_size(
                 FILE_TEST,
@@ -220,7 +220,7 @@ mod size_format {
 
         /// impl TryFrom<BufReader<File>> for FileStream<File>
         #[tokio::test]
-        async fn try_from_t_1() -> io::Result<()> {
+        async fn impl_try_from_t_1() -> io::Result<()> {
             let chunk_size = 150.0;
             let file_orig = FileTest::create_file_with_size(
                 FILE_TEST,
