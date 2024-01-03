@@ -217,6 +217,7 @@ impl<R: Seek + Read> Iterator for FileIter<R> {
     }
 }
 
+/// Added implementations of conversions from other types
 mod impl_try_from {
     use std::borrow::Cow;
 
@@ -308,6 +309,7 @@ mod impl_try_from {
         }
     }
 
+    #[cfg(not(tarpaulin_include))]
     impl TryFrom<&str> for FileIter<File> {
         type Error = io::Error;
 
@@ -316,6 +318,7 @@ mod impl_try_from {
         }
     }
 
+    #[cfg(not(tarpaulin_include))]
     impl TryFrom<String> for FileIter<File> {
         type Error = io::Error;
 
@@ -324,6 +327,7 @@ mod impl_try_from {
         }
     }
 
+    #[cfg(not(tarpaulin_include))]
     impl TryFrom<Cow<'_, str>> for FileIter<File> {
         type Error = io::Error;
 
