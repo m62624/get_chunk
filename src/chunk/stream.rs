@@ -1,7 +1,7 @@
-use std::future::Future;
-
 use super::data_chunk::{Chunk, ChunkSize, FileInfo};
 use super::Memory;
+use async_convert::{async_trait, TryFrom};
+use std::future::Future;
 
 use std::io::Cursor;
 use tokio::time::Instant;
@@ -171,19 +171,22 @@ impl FileStream<File> {
     }
 }
 
-impl FileStream<Cursor<Vec<u8>>> {
-    pub async fn from_bytes(bytes: Vec<u8>) -> io::Result<FileStream<Cursor<Vec<u8>>>> {
-        Ok(FileStream {
-            memory: Memory::new(),
-            file: FilePack::<Cursor<Vec<u8>>>::new(
-                FilePack::<Cursor<Vec<u8>>>::create_buffer(bytes).await?,
-                0,
-            )
-            .await?,
-            current_task: None,
-        })
-    }
-}
+// #[async_trait]
+// impl TryFrom<
+
+// impl FileStream<Cursor<Vec<u8>>> {
+//     pub async fn from_bytes(bytes: Vec<u8>) -> io::Result<FileStream<Cursor<Vec<u8>>>> {
+//         Ok(FileStream {
+//             memory: Memory::new(),
+//             file: FilePack::<Cursor<Vec<u8>>>::new(
+//                 FilePack::<Cursor<Vec<u8>>>::create_buffer(bytes).await?,
+//                 0,
+//             )
+//             .await?,
+//             current_task: None,
+//         })
+//     }
+// }
 
 impl<R: AsyncRead + AsyncSeek + Unpin + Send> FileStream<R> {
     /// Checks if the read operation is complete, returning `true` if the data buffer is empty.
@@ -327,6 +330,88 @@ impl<R: AsyncRead + AsyncSeek + Unpin + Send + 'static> Stream for FileStream<R>
                 }
             }
             None => std::task::Poll::Ready(None),
+        }
+    }
+}
+
+mod impl_try_from {
+    use super::*;
+
+    #[async_trait]
+    impl TryFrom<File> for FileStream<File> {
+        type Error = io::Error;
+
+        async fn try_from(file: File) -> Result<Self, Self::Error> {
+            Ok(FileStream {
+                memory: Memory::new(),
+                file: FilePack::<File>::new(BufReader::new(file), 0).await?,
+                current_task: None,
+            })
+        }
+    }
+
+    #[async_trait]
+    impl TryFrom<BufReader<File>> for FileStream<File> {
+        type Error = io::Error;
+
+        async fn try_from(buffer: BufReader<File>) -> Result<Self, Self::Error> {
+            Ok(FileStream {
+                memory: Memory::new(),
+                file: FilePack::<File>::new(buffer, 0).await?,
+                current_task: None,
+            })
+        }
+    }
+
+    #[async_trait]
+    impl TryFrom<Vec<u8>> for FileStream<Cursor<Vec<u8>>> {
+        type Error = io::Error;
+
+        async fn try_from(bytes: Vec<u8>) -> Result<Self, Self::Error> {
+            Ok(FileStream {
+                memory: Memory::new(),
+                file: FilePack::<Cursor<Vec<u8>>>::new(
+                    FilePack::<Cursor<Vec<u8>>>::create_buffer(bytes).await?,
+                    0,
+                )
+                .await?,
+                current_task: None,
+            })
+        }
+    }
+
+    #[async_trait]
+    impl TryFrom<Cursor<Vec<u8>>> for FileStream<Cursor<Vec<u8>>> {
+        type Error = io::Error;
+
+        async fn try_from(buffer: Cursor<Vec<u8>>) -> Result<Self, Self::Error> {
+            Ok(FileStream {
+                memory: Memory::new(),
+                file: FilePack::<Cursor<Vec<u8>>>::new(BufReader::new(buffer), 0).await?,
+                current_task: None,
+            })
+        }
+    }
+
+    #[async_trait]
+    impl TryFrom<BufReader<Cursor<Vec<u8>>>> for FileStream<Cursor<Vec<u8>>> {
+        type Error = io::Error;
+
+        async fn try_from(buffer: BufReader<Cursor<Vec<u8>>>) -> Result<Self, Self::Error> {
+            Ok(FileStream {
+                memory: Memory::new(),
+                file: FilePack::<Cursor<Vec<u8>>>::new(buffer, 0).await?,
+                current_task: None,
+            })
+        }
+    }
+
+    #[async_trait]
+    impl TryFrom<String> for FileStream<File> {
+        type Error = io::Error;
+
+        async fn try_from(path: String) -> Result<Self, Self::Error> {
+            FileStream::new(path).await
         }
     }
 }
