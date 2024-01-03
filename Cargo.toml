@@ -27,7 +27,6 @@ rustdoc-args = ["--cfg", "docsrs"]
 [dependencies]
 strum = { version = "0.25.0", optional = true }
 strum_macros = { version = "0.25.3", optional = true }
-async-convert = { version = "1.0.0", optional = true }
 
 tokio = { version = "1.35.1", features = [
     "rt",
@@ -37,6 +36,7 @@ tokio = { version = "1.35.1", features = [
 tokio-stream = { version = "0.1.14", optional = true }
 
 sysinfo = "0.30.0"
+async-trait = { version = "0.1.77", optional = true }
 
 [dev-dependencies]
 uuid = { version = "1.6.1", features = ["v4"] }
@@ -50,7 +50,7 @@ doctest = false
 [features]
 
 # Dependencies for asynchronous stream handling with Tokio.
-stream = ["dep:tokio-stream", "dep:tokio", "dep:async-convert"]
+stream = ["dep:tokio-stream", "dep:tokio", "dep:async-trait"]
 
 # Dependencies for size formatting using Strum and Strum_macros.
 # Size formatting provides a convenient way to specify chunk sizes in
