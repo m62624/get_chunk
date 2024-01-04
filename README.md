@@ -154,9 +154,8 @@ The variables `prev` and `now` represent the previous and current read time, res
 ```
 
 - **Bytes Chunk Size:**
-
 ```rust
-(file_size * (bytes.min(file_size as usize) as f64 / 100.0)).min(ram_available * 0.85)
+(bytes as f64).min(file_size).min(ram_available * 0.85)
 ```
 
 ---
