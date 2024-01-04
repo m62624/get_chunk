@@ -303,4 +303,21 @@ mod size_format {
             Ok(())
         }
     }
+
+    mod chunk_bytes {
+        use super::*;
+
+        #[test]
+        fn chunk_bytes_t_0() -> io::Result<()> {
+            let bytes: [u8; 13] = [72, 101, 108, 108, 111, 44, 32, 119, 111, 114, 108, 100, 33];
+            let mut file_iter = FileIter::try_from(bytes.as_slice())?.set_mode(ChunkSize::Bytes(4));
+
+            assert_eq!(file_iter.next().unwrap()?, [72, 101, 108, 108]);
+            assert_eq!(file_iter.next().unwrap()?, [111, 44, 32, 119]);
+            assert_eq!(file_iter.next().unwrap()?, [111, 114, 108, 100]);
+            assert_eq!(file_iter.next().unwrap()?, [33]);
+
+            Ok(())
+        }
+    }
 }

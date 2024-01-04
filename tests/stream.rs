@@ -308,4 +308,23 @@ mod size_format {
             Ok(())
         }
     }
+
+    mod chunk_bytes {
+        use super::*;
+
+        #[tokio::test]
+        async fn chunk_bytes_t_0() -> io::Result<()> {
+            let bytes = [72, 101, 108, 108, 111, 44, 32, 119, 111, 114, 108, 100, 33].to_vec();
+            let mut file_iter = FileStream::try_from_data(bytes)
+                .await?
+                .set_mode(ChunkSize::Bytes(4));
+
+            assert_eq!(file_iter.next().await.unwrap()?, [72, 101, 108, 108]);
+            assert_eq!(file_iter.next().await.unwrap()?, [111, 44, 32, 119]);
+            assert_eq!(file_iter.next().await.unwrap()?, [111, 114, 108, 100]);
+            assert_eq!(file_iter.next().await.unwrap()?, [33]);
+
+            Ok(())
+        }
+    }
 }
