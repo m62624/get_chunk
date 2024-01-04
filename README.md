@@ -1,6 +1,7 @@
 # get_chunk
 
 [![Crates.io](https://img.shields.io/crates/v/get_chunk?style=for-the-badge)](https://crates.io/crates/get_chunk)
+[![Static Badge](https://img.shields.io/badge/changelog---?style=for-the-badge&labelColor=blue&color=blue)](https://github.com/m62624/get_chunk/blob/main/CHANGELOG.md)
 [![docs.rs](https://img.shields.io/docsrs/get_chunk?style=for-the-badge)](https://docs.rs/get_chunk/latest/get_chunk)
 [![Codecov](https://img.shields.io/codecov/c/github/m62624/get_chunk?style=for-the-badge)](https://codecov.io/gh/m62624/get_chunk)
 
@@ -51,6 +52,9 @@ use get_chunk::data_size_format::iec::IECUnit;
 fn main() -> std::io::Result<()> {
 
     let file_iter = FileIter::new("file.txt")?;
+    // or 
+    // let file_iter = FileIter::try_from(File::open("file.txt")?)?;
+    // ...
     for chunk in file_iter {
         match chunk {
             Ok(data) => {
@@ -79,17 +83,15 @@ use get_chunk::stream::{FileStream, StreamExt};
 async fn main() -> std::io::Result<()> {
 
     let mut file_stream = FileStream::new("file.txt").await?;
+    // or
+    // let mut file_stream = FileStream::try_from_data(File::open("file.txt").await?)?;
+    // ...
     while let Ok(chunk) = file_stream.try_next().await {
         match chunk {
-            Some(data) => {
-                // some calculations with chunk
-                // .....
-                println!("{}", IECUnit::auto(data.len() as f64));
-            }
-            None => {
-                println!("End of file");
-                break;
-            }
+            Some(chunk) => {
+                 // some calculations with chunk
+            },
+            None => break,
         }
     }
 
