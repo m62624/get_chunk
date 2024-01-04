@@ -90,6 +90,11 @@ pub struct FileIter<R: Seek + Read> {
 
 impl FileIter<File> {
     /// Creates a new `FileIter` instance. The default setting is automatic detection of the chunk size
+    ///
+    /// ---
+    /// ⚙️ If you prefer not to specify the file path directly in `new`, you can use `TryFrom` with various input types.
+    ///
+    /// ---
     /// ### Arguments
     /// * `path` - A path to the file.
     /// ## Example
