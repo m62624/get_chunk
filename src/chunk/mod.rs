@@ -190,7 +190,9 @@ pub mod data_chunk {
         }
 
         fn bytes_chunk(file_size: f64, ram_available: f64, bytes: usize) -> f64 {
-            (file_size * (bytes.min(file_size as usize) as f64 / 100.0)).min(ram_available * 0.85)
+            (bytes as f64)
+                .min(file_size * 0.85)
+                .min(ram_available * 0.85)
         }
     }
 }
