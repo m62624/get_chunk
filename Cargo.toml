@@ -5,8 +5,8 @@ version = "1.2.0"
 edition = "2021"
 description = "File iterator or stream with auto or manual chunk size selection"
 repository = "https://github.com/m62624/get_chunk"
-categories = ["asynchronous", "filesystem", "memory-management"]
-keywords = ["file", "async-io", "chunk"]
+categories = ["asynchronous", "rust-patterns"]
+keywords = ["file", "iterator", "async-io", "chunk"]
 license = "MIT"
 exclude = [
     ".github",
