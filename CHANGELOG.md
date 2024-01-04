@@ -18,6 +18,21 @@
   - `String` --> `FileIter` (equivalent to the `new` method)
   - `Cow<'_, str>` --> `FileIter` (equivalent to the `new` method)
 
+#### Example
+```rust
+use get_chunk::iterator::FileIter;
+use std::{fs::File, io};
+
+fn main() -> io::Result<()> {
+    let file = FileIter::try_from(File::open("src/main.rs")?)?;
+    for chunk in file {
+        // ...
+    }
+    Ok(())
+}
+```
+
+---
 - Implemented `TryFrom` for `FileStream` with custom trait to support async operations (use the `try_from_data` method instead of `try_from`):
   - `File` --> `FileIter`
   - `BufReader<File>` --> `FileIter`
@@ -26,6 +41,20 @@
   - `BufReader<io::Cursor<Vec<u8>>>` --> `FileIter`
   - `String` --> `FileIter` (equivalent to the `new` method)
 
+#### Example
+```rust
+use get_chunk::stream::{FileStream, StreamExt, TryFrom};
+use tokio::{fs::File, io};
+
+#[tokio::main]
+async fn main() -> io::Result<()> {
+    let mut file = FileStream::try_from_data(File::open("src/main.rs").await?).await?;
+    while let Some(chunk) = file.next().await {
+        // ...
+    }
+    Ok(())
+}
+```
 
 ## [1.1.0] - 2023.12.23
 
