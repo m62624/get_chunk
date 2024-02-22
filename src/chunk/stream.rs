@@ -14,6 +14,7 @@ use tokio::{
 pub use impl_try_from::TryFrom;
 use tokio_stream::Stream;
 pub use tokio_stream::StreamExt;
+
 #[cfg_attr(feature = "debug", derive(Debug))]
 struct FilePack<R>
 where
@@ -71,7 +72,7 @@ impl FilePack<Cursor<Vec<u8>>> {
     }
 }
 
-impl<R: AsyncRead + Unpin + Send> FilePack<R> {
+impl<R: AsyncRead + Unpin + Send> FilePack<R> { 
     async fn read_chunk(mut self) -> io::Result<(Chunk, Self)> {
         let mut buffer = Vec::new();
         match self.buffer.as_mut() {
@@ -176,23 +177,6 @@ impl FileStream<File> {
         })
     }
 }
-
-// #[async_trait]
-// impl TryFrom<
-
-// impl FileStream<Cursor<Vec<u8>>> {
-//     pub async fn from_bytes(bytes: Vec<u8>) -> io::Result<FileStream<Cursor<Vec<u8>>>> {
-//         Ok(FileStream {
-//             memory: Memory::new(),
-//             file: FilePack::<Cursor<Vec<u8>>>::new(
-//                 FilePack::<Cursor<Vec<u8>>>::create_buffer(bytes).await?,
-//                 0,
-//             )
-//             .await?,
-//             current_task: None,
-//         })
-//     }
-// }
 
 impl<R: AsyncRead + AsyncSeek + Unpin + Send> FileStream<R> {
     /// Checks if the read operation is complete, returning `true` if the data buffer is empty.
