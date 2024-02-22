@@ -267,6 +267,8 @@ mod impl_try_from {
     impl TryFrom<&Vec<u8>> for FileIter<io::Cursor<Vec<u8>>> {
         type Error = io::Error;
 
+        /// **⚠️ Warning**\
+        /// This is a costly operation as content cloning is required.
         fn try_from(bytes: &Vec<u8>) -> Result<Self, Self::Error> {
             Ok(FileIter {
                 memory: Memory::new(),
@@ -303,6 +305,8 @@ mod impl_try_from {
     impl TryFrom<&[u8]> for FileIter<io::Cursor<Vec<u8>>> {
         type Error = io::Error;
 
+        /// **⚠️ Warning**\
+        /// This is a costly operation as content cloning is required.
         fn try_from(bytes: &[u8]) -> Result<Self, Self::Error> {
             Ok(FileIter {
                 memory: Memory::new(),
