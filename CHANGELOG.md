@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.2.1] - 2024.02.22
+
+- Updated dependencies
+- Added comments about the costly conversion in `TryFrom'
+
 ## [1.2.0] - 2024.01.04
 
 ### Fixed
