@@ -1,7 +1,7 @@
 [package]
 
 name = "get_chunk"
-version = "1.2.1"
+version = "1.2.2"
 edition = "2021"
 description = "File iterator or stream with auto or manual chunk size selection"
 repository = "https://github.com/m62624/get_chunk"
@@ -25,21 +25,21 @@ rustdoc-args = ["--cfg", "docsrs"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [dependencies]
-strum = { version = "0.26.1", optional = true }
-strum_macros = { version = "0.26.1", optional = true }
+strum = { version = "0.26.3", optional = true }
+strum_macros = { version = "0.26.4", optional = true }
 
-tokio = { version = "1.36.0", features = [
+tokio = { version = "1.38.0", features = [
     "rt",
     "fs",
     "io-util",
 ], optional = true }
-tokio-stream = { version = "0.1.14", optional = true }
+tokio-stream = { version = "0.1.15", optional = true }
 
-sysinfo = "0.30.5"
-async-trait = { version = "0.1.77", optional = true }
+sysinfo = "0.30.12"
+async-trait = { version = "0.1.80", optional = true }
 
 [dev-dependencies]
-uuid = { version = "1.7.0", features = ["v4"] }
+uuid = { version = "1.9.1", features = ["v4"] }
 home = "0.5.9"
 rand = "0.8.5"
 sha2 = "0.10.8"
