@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.2.2] - 2024.07.07
+
+- Updated dependencies
+- Updated docs
+
 ## [1.2.1] - 2024.02.22
 
 - Updated dependencies
