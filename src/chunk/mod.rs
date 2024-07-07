@@ -186,7 +186,7 @@ pub mod data_chunk {
         }
 
         fn percentage_chunk(file_size: f64, ram_available: f64, percentage: f64) -> f64 {
-            (file_size * (percentage.min(100.0).max(0.1) / 100.0)).min(ram_available * 0.85)
+            (file_size * (percentage.clamp(0.1, 100.0) / 100.0)).min(ram_available * 0.85)
         }
 
         fn bytes_chunk(file_size: f64, ram_available: f64, bytes: usize) -> f64 {

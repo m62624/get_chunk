@@ -1,5 +1,4 @@
 mod temp_files;
-use temp_files::{FileTest, FILE_TEST};
 
 #[cfg(all(feature = "size_format", feature = "stream"))]
 mod size_format {
@@ -8,6 +7,7 @@ mod size_format {
     use get_chunk::stream::{FileStream, StreamExt, TryFrom};
     use get_chunk::ChunkSize;
     use std::io;
+    use temp_files::{FileTest, FILE_TEST};
 
     mod set_mode_tests {
         use super::*;

@@ -1,7 +1,5 @@
 mod temp_files;
 
-use temp_files::{FileTest, FILE_TEST};
-
 #[cfg(feature = "size_format")]
 mod size_format {
     use super::*;
@@ -9,6 +7,7 @@ mod size_format {
     use get_chunk::iterator::FileIter;
     use get_chunk::ChunkSize;
     use std::io;
+    use temp_files::{FileTest, FILE_TEST};
 
     mod set_mode_tests {
         use super::*;
