@@ -72,7 +72,7 @@ impl FilePack<Cursor<Vec<u8>>> {
     }
 }
 
-impl<R: AsyncRead + Unpin + Send> FilePack<R> { 
+impl<R: AsyncRead + Unpin + Send> FilePack<R> {
     async fn read_chunk(mut self) -> io::Result<(Chunk, Self)> {
         let mut buffer = Vec::new();
         match self.buffer.as_mut() {
@@ -168,6 +168,28 @@ impl FileStream<File> {
     /// }
     /// ```
     ///
+    /// OR
+    /// ```
+    /// use get_chunk::{
+    ///     // Note: requires a `size_format` attribute.
+    ///     data_size_format::iec::{IECSize, IECUnit},
+    ///     // Note: requires a `stream` attribute.
+    ///     stream::{FileStream, StreamExt},
+    ///     ChunkSize,
+    /// };
+    /// #[tokio::test]
+    /// async fn main() -> std::io::Result<()> {
+    ///     let mut file_stream = FileStream::new("file.bin")
+    ///         .await?
+    ///         .include_available_swap()
+    ///         .set_mode(ChunkSize::Bytes(40000))
+    ///         .set_start_position_bytes(IECUnit::new(432.0, IECSize::Mebibyte).into())
+    ///         .await?;
+    ///     while let Some(chunk) = file_stream.next().await {
+    ///         //...
+    ///     }
+    ///     Ok(())
+    /// }
     pub async fn new<S: Into<Box<str>>>(path: S) -> io::Result<FileStream<File>> {
         Ok(FileStream {
             memory: Memory::new(),

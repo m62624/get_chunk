@@ -54,14 +54,18 @@ impl<R: Read + Seek> FilePack<R> {
     fn read_chunk(&mut self) -> io::Result<Chunk> {
         let mut buffer = Vec::new();
         let timer = Instant::now();
+
         self.buffer
             .get_mut()
             .take(self.metadata.chunk_info.prev_bytes_per_second.max(1.0) as u64)
             .read_to_end(&mut buffer)?;
+
         let timer = timer.elapsed();
+
         if buffer.is_empty() {
             self.read_complete = true;
         }
+
         Ok(Chunk {
             bytes_per_second: if !timer.is_zero() {
                 buffer.len() as f64 / timer.as_secs_f64()
@@ -120,6 +124,25 @@ impl FileIter<File> {
     /// }
     /// ```
     ///
+    /// OR
+    ///
+    /// ```
+    /// use get_chunk::{
+    ///   // Note: requires a `size_format` attribute.
+    ///     data_size_format::iec::{IECSize, IECUnit},
+    ///     iterator::FileIter,
+    ///     ChunkSize,
+    /// };
+    ///
+    ///
+    /// fn main() -> std::io::Result<()> {
+    ///     let file_iter = FileIter::new("file.bin")?
+    ///         .include_available_swap()
+    ///         .set_mode(ChunkSize::Bytes(40000))
+    ///         .set_start_position_bytes(IECUnit::new(432.0,IECSize::Mebibyte).into());
+    ///     Ok(())
+    /// }
+    /// ```
     pub fn new<S: Into<Box<str>>>(path: S) -> io::Result<FileIter<File>> {
         Ok(FileIter {
             memory: Memory::new(),

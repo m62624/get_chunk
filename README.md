@@ -70,6 +70,25 @@ fn main() -> std::io::Result<()> {
 }
 ```
 
+#### Example
+```rust
+use get_chunk::{
+  // Note: requires a `size_format` attribute.
+    data_size_format::iec::{IECSize, IECUnit},
+    iterator::FileIter,
+    ChunkSize,
+};
+
+fn main() -> std::io::Result<()> {
+    let file_iter = FileIter::new("file.txt")?
+        .include_available_swap()
+        .set_mode(ChunkSize::Bytes(40000))
+        .set_start_position_bytes(IECUnit::new(432.0, IECSize::Mebibyte).into());
+    Ok(())
+}
+
+```
+
 ### Stream version
 
 #### Example
