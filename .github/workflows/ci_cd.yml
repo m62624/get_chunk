@@ -86,11 +86,12 @@ jobs:
           docker cp $(docker ps -lq):/usr/src/get_chunk/coverage/cobertura.xml .
       # Шаг для отправки отчета о покрытии в Codecov
       - name: Send coverage report to Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
         with:
           fail_ci_if_error: true
           files: cobertura.xml
           verbose: true
+          token: ${{ secrets.CODECOV_TOKEN }}
 
   package-publishing: 
     if: startsWith(github.ref, 'refs/tags/v')
