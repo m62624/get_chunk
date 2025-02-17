@@ -25,7 +25,7 @@ rustdoc-args = ["--cfg", "docsrs"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [dependencies]
-strum = { version = "0.26.1", optional = true }
+strum = { version = "0.27.1", optional = true }
 strum_macros = { version = "0.26.1", optional = true }
 
 tokio = { version = "1.36.0", features = [
