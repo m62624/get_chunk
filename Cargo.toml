@@ -41,7 +41,7 @@ async-trait = { version = "0.1.77", optional = true }
 [dev-dependencies]
 uuid = { version = "1.7.0", features = ["v4"] }
 home = "0.5.9"
-rand = "0.8.5"
+rand = "0.9.1"
 sha2 = "0.10.8"
 
 [lib]
